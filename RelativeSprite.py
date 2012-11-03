@@ -7,7 +7,9 @@ class RelativeSprite(pygame.sprite.Sprite):
 		if hasattr(self, 'image'):
 			self.rect = self.image.get_rect()
 		if not camera:
-			camera = [0,0]
+			camera_base = lambda: None
+			camera_base.rect = Rect(10, 10, 10, 10)
+			camera_base.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 		self.camera = camera
 		self.truePos = [0,0]
 
@@ -17,8 +19,8 @@ class RelativeSprite(pygame.sprite.Sprite):
 
 	def update(self, dT):
 		if self.rect:
-			self.rect.x = self.truePos[0] - self.camera.rect.centerx
-			self.rect.y = self.truePos[1] - self.camera.rect.centery
+			self.rect.x = self.truePos[0] - self.camera.truePos[0]
+			self.rect.y = self.truePos[1] - self.camera.truePos[1]
 
 	def setTruePos(self, pos):
 		self.rect.center = pos

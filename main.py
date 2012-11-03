@@ -20,14 +20,12 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 sprites = pygame.sprite.Group()
 background = None
 
-mousePos = (0,0)
-
 hero = Hero()
 sprites.add(hero)
-hero.rect.center = (100,100)
+hero.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
-camera_base = Rect()
-camera_base.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+loadedBlocks = set()
+
 static = RelativeSprite(hero)
 static.image = load_image('static.png', (40,40))
 static.rect = static.image.get_rect()
@@ -47,6 +45,9 @@ def handleEvents(events):
 		if e.type == QUIT:
 			pygame.quit()
 			sys.exit(0)
+
+def visibleBlocks(pos):
+	# calculates the blocks that should be visible
 
 
 def refreshScreen():
