@@ -23,13 +23,21 @@ tiles[8] = [None, 1]
 tiles[9] = [None, 1]
 
 # Helicopter Top Left
-tiles[10] = [None, -1]
+tiles[100] = [None, -1]
 
 # Helicopter Clearing
-tiles[11] = [None, -1]
+tiles[101] = [None, -1]
+tiles[102] = [None, -1]
+tiles[103] = [None, -1]
+tiles[104] = [None, -1]
+tiles[105] = [None, -1]
+tiles[106] = [None, -1]
+tiles[107] = [None, -1]
+tiles[108] = [None, -1]
+tiles[109] = [None, -1]
 
 def gen_block(seed):
-    sz_x = sz_y = 75
+    sz_x = sz_y = 64
     tr_dens = 10
     random.seed(seed)
     
@@ -37,6 +45,8 @@ def gen_block(seed):
     blocked = set([])
     
     mp_type = random.sample([0]*100 + [1]*100, 1)[0]
+    bg = {}
+    fg = {}
     print "-"*8
     print mp_type
     print "-"*8
@@ -107,18 +117,22 @@ def gen_block(seed):
     
     for tr in trees:
         mp[tr[0]][tr[1]] = 1
-        mp[tr[0]-1][tr[1]-1] = 2
-        mp[tr[0]-1][tr[1]] = 3
-        mp[tr[0]-1][tr[1]+1] = 4
-        mp[tr[0]][tr[1]-1] = 5
-        mp[tr[0]][tr[1]+1] = 6
-        mp[tr[0]+1][tr[1]-1] = 7
-        mp[tr[0]+1][tr[1]] = 8
-        mp[tr[0]+1][tr[1]+1] = 9
+        fg[(tr[0]-1, tr[1]-1)] = 2
+        fg[(tr[0]-1, tr[1])] = 3
+        fg[(tr[0]-1, tr[1]+1)] = 4
+        fg[(tr[0], tr[1]-1)] = 5
+        fg[(tr[0], tr[1]+1)] = 6
+        fg[(tr[0]+1, tr[1]-1)] = 7
+        fg[(tr[0]+1, tr[1])] = 8
+        fg[(tr[0]+1, tr[1]+1)] = 9
     
-    return mp
+    
+    for j in xrange(sz_y):
+        for i in xrange(sz_x):
+            bg[(x, y)] = mp[j][i]
+    
+    print "\n".join("".join(str(i) for i in r) for r in mp)
+    return bg, fg
 
-m = gen_block(1233)
-print "\n".join("".join(str(i) for i in r) for r in m)
-
+m = gen_block(36731233)
 
