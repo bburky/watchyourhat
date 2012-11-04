@@ -19,11 +19,11 @@ class cat(RelativeSprite):
     images = {}
     maxHealth = 50
     attackTimeout = 1000
-    power = 10
+    power = 20
     def __init__(self, x, y):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
-        self.health = ethunterone.maxHealth
+        self.health = cat.maxHealth
         self.aware = Config['PIXELS_PER_TILE']*3
         #self.id = id
         self.speed = 9

@@ -403,9 +403,10 @@ def generateTiles(block):
             spr.target = hero
             gpEnem.add(spr)
 
-            hb = HealthBar(target=spr)
-            actors.add(hb)
-            active.add(hb)
+            if not isinstance(spr, cat):
+                hb = HealthBar(target=spr)
+                actors.add(hb)
+                active.add(hb)
             
             enemies_list_lock.acquire()
             enemies_list[enemies_n] = spr
@@ -516,7 +517,7 @@ def slash():
         collisions = pygame.sprite.spritecollide(collisionSprite, enemies, False)
         collisions += pygame.sprite.spritecollide(collisionSprite, allies, False)
         for c in collisions:
-            c.damage(30)
+            c.damage(50)
             if isinstance(c, Ally):
                 multiplayer.s.send('6 %d %d;' % (c.n, 30))
             else:
