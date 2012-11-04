@@ -89,35 +89,24 @@ gem = pygame.sprite.Sprite()
 gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))
 gem.rect = gem.image.get_rect()
 gem.rect.topleft = (0, SCREEN_HEIGHT-45*2)
-gui.add(gem)
 
 moneyText = Text("12345")
 moneyText.color = (255, 0, 0)
 moneyText.bgColor = (0,0,0,0)
 moneyText.rect.topleft = Vec2d(gem.rect.topright) + Vec2d(5, 18)
 moneyText.createImage()
-gui.add(moneyText)
 
 bullets = pygame.sprite.Sprite()
 bullets.image = ssBottom.image_at(Rect(8*45, 6*45, 45, 45))
 bullets.rect = bullets.image.get_rect()
 bullets.rect.right -= 100
 bullets.rect.topleft = (0, SCREEN_HEIGHT-45)
-gui.add(bullets)
 
 bulletsText = Text(str(remainingBullets))
 bulletsText.color = (255, 0, 0)
 bulletsText.bgColor = (0,0,0,0)
 bulletsText.rect.topleft = Vec2d(bullets.rect.topright) + Vec2d(5, 18)
 bulletsText.createImage()
-gui.add(bulletsText)
-
-helpText = Text("")
-helpText.rect.topleft = (SCREEN_WIDTH-200, 300)
-helpText.maxArea = Rect((0,0), (100, 50))
-helpText.bgColor = (152,152,152,200)
-helpText.string = "Foo"
-gui.add(helpText)
 
 clock = pygame.time.Clock()
 
@@ -174,7 +163,8 @@ def refreshScreen():
     for l in lower:
         if l in vis:
             lower[l].draw(screen)
-    actors.draw(screen)
+    if gameStarted:
+      actors.draw(screen)
     for l in lines:
         pygame.draw.line(screen, *l)
     lines.clear()
@@ -374,9 +364,6 @@ while True:
             callHeli()
             lastHeli = pygame.time.get_ticks()
 
-        if pygame.time.get_ticks() > 5000:
-            helpText.text = ""
-            helpText.bgColor = (152, 152, 152, 0)
         if lastEnemyCreation < pygame.time.get_ticks() - 1000:
             lastEnemyCreation = pygame.time.get_ticks()
         shouldBeVisible = visibleBlocks(hero.truePos)
@@ -395,12 +382,15 @@ while True:
 
     if titleTimeout <= 0:
         title.kill()
-    elif any(buttons.values()):
-        gameStarted = True
     elif gameStarted:
         titleTimeout -= dT
-        print titleTimeout/2000*255
         title.image.set_alpha(titleTimeout/2000*255)
+    elif any(buttons.values()):
+        gameStarted = True
+        gui.add(gem)
+        gui.add(moneyText)
+        gui.add(bullets)
+        gui.add(bulletsText)
 
     crosshair.rect.center = pygame.mouse.get_pos()
     refreshScreen()
