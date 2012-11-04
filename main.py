@@ -243,6 +243,7 @@ gameover = pygame.sprite.Sprite()
 gameover.image = load_image('gameover.png')
 gameover.rect = gameover.image.get_rect()
 gameover.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+musica.gameover()
 
 gem = pygame.sprite.Sprite()
 gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))
@@ -543,17 +544,17 @@ def slash():
             else:
                 multiplayer.s.send('5 %d %d;' % (c.n, 30) )
 
-def callHeli():
-    print "geduda choppa"
-    h = Helicopter()
-    musica.helicopterstart()
-    h.truePos = [hero.truePos[0], hero.truePos[1]]
-    h.camera = hero
-    h.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.h))
-    h.update(0)
-    h.target = hero
-    active.add(h)
-    actors.add(h)
+#def callHeli():
+#    print "geduda choppa"
+#    h = Helicopter()
+#    musica.helicopterstart()
+#    h.truePos = [hero.truePos[0], hero.truePos[1]]
+#    h.camera = hero
+#    h.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.h))
+#    h.update(0)
+#    h.target = hero
+#    active.add(h)
+#    actors.add(h)
     #TODO STOP HELIIIII!!!!
 
 def addAlly():
@@ -610,10 +611,10 @@ while True:
             shoot()
             lastShot = pygame.time.get_ticks()
 
-        if buttons[2] and (not lastHeli or lastHeli < pygame.time.get_ticks() - 10000):
-            print "heli"
-            callHeli()
-            lastHeli = pygame.time.get_ticks()
+        #if buttons[2] and (not lastHeli or lastHeli < pygame.time.get_ticks() - 10000):
+         #   print "heli"
+          #  callHeli()
+          #  lastHeli = pygame.time.get_ticks()
 
         if lastEnemyCreation < pygame.time.get_ticks() - 1000:
             lastEnemyCreation = pygame.time.get_ticks()
