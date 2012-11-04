@@ -524,7 +524,7 @@ def shoot():
         lines.add(((0,0,0), start, end))
     shot_end = screenToAbs(shot_end)
     shot_start = screenToAbs(start)
-    multiplayer.s.send('8 %d %d %d %d;' % (start[0], start[1], shot_end[0], shot_end[1]))
+    #multiplayer.s.send('8 %d %d %d %d;' % (start[0], start[1], shot_end[0], shot_end[1]))
     if hero.ammo <= 0:
         hero.reload()
 
