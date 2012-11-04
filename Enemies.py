@@ -30,6 +30,7 @@ class cat(RelativeSprite):
             cat.images['idle'] = []
             cat.images['idle'].append(ss.image_at(Rect(1*45, 6*45, 45, 90)))
             cat.images['idle'].append(ss.image_at(Rect(3*45, 6*45, 45, 90)))
+            cat.images['dead'].append(ss.image_at(Rect(11*45, 2*45, 45, 90)))
         self.i = 0
         self.image = cat.images['idle'][self.i]
         self.rect = self.image.get_rect()
@@ -44,10 +45,10 @@ class cat(RelativeSprite):
     def die(self):
         self.alive = False
         self.deathTime = pygame.time.get_ticks()
-        #self.image = cat.images['dead']
-        #pos = self.target.rect.center
-        #targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-        #self.image = rot_center(self.image, -90-targetDir)
+        self.image = cat.images['dead']
+        pos = self.target.rect.center
+        targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
+        self.image = rot_center(self.image, -90-targetDir)
     def update(self, dT):
         RelativeSprite.update(self, dT)
         #change image
@@ -56,8 +57,7 @@ class cat(RelativeSprite):
                 self.i = random.choice(range(len(cat.images['idle'])))
             self.image = cat.images['idle'][self.i]
         else:
-            pass
-            #self.image = cat.images['dead']
+            self.image = cat.images['dead']
 
         #change direction
         if self.alive and self.target:
@@ -100,7 +100,7 @@ class ethunterone(RelativeSprite):
         self.health = ethunterone.maxHealth
         self.aware = Config['PIXELS_PER_TILE']*20
         #self.id = id
-        self.speed = 3.0/100
+        self.speed = 3
         self.musica = Music()
         if not ethunterone.images:
             ss = Spritesheet('tiles-bottom.png')
@@ -150,7 +150,7 @@ class ethunterone(RelativeSprite):
         if self.alive and self.target:
             vel = Vec2d(self.target.truePos) - Vec2d(self.truePos)
             if vel.length < self.aware:
-                vel.length = self.speed*dT
+                vel.length = self.speed
                 self.truePos += vel
         else:
             if hasattr(self, 'deathTime') and self.deathTime < pygame.time.get_ticks() - 1000:
