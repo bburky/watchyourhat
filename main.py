@@ -73,6 +73,18 @@ crosshair.rect = crosshair.image.get_rect()
 crosshair.rect.center = pygame.mouse.get_pos()
 gui.add(crosshair)
 
+title = pygame.sprite.Sprite()
+titleImage = load_image('title.png')
+title.image = pygame.Surface(titleImage.get_size(), depth=24)
+titleAlphaKey = (0,255,0)
+title.image.fill(titleAlphaKey)
+title.image.set_colorkey(titleAlphaKey)
+title.image.blit(titleImage, (0,0))
+title.image.set_alpha(255)
+title.rect = title.image.get_rect()
+title.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+gui.add(title)
+
 gem = pygame.sprite.Sprite()
 gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))
 gem.rect = gem.image.get_rect()
@@ -333,47 +345,63 @@ lastEnemyCreation = 0
 lastBlockLoad = 0
 lastShot = -1
 lastHeli = 0
+
+gameStarted = False
+titleTimeout = 2000.0
+
 while True:
     dT = clock.tick(60)
     fps.string = "%.2f" % (1000.0/dT)
     handleEvents(pygame.event.get())
-    active.update(dT)
-    if hero.alive:
-        if keys[K_w]:
-            hero.truePos[1] += -hero.speed*dT/1000
-        if keys[K_s]:
-            hero.truePos[1] += hero.speed*dT/1000
-        if keys[K_a]:
-            hero.truePos[0] += -hero.speed*dT/1000
-        if keys[K_d]:
-            hero.truePos[0] += hero.speed*dT/1000
 
-    if buttons[1] and lastShot < pygame.time.get_ticks() - 500:
-        shoot()
-        lastShot = pygame.time.get_ticks()
+    if gameStarted:
+        active.update(dT)
+        if hero.alive:
+            if keys[K_w]:
+                hero.truePos[1] += -hero.speed*dT/1000
+            if keys[K_s]:
+                hero.truePos[1] += hero.speed*dT/1000
+            if keys[K_a]:
+                hero.truePos[0] += -hero.speed*dT/1000
+            if keys[K_d]:
+                hero.truePos[0] += hero.speed*dT/1000
 
-    if buttons[2] and (not lastHeli or lastHeli < pygame.time.get_ticks() - 10000):
-        print "heli"
-        callHeli()
-        lastHeli = pygame.time.get_ticks()
+        if buttons[1] and lastShot < pygame.time.get_ticks() - 500:
+            shoot()
+            lastShot = pygame.time.get_ticks()
 
-    if pygame.time.get_ticks() > 5000:
-        helpText.text = ""
-        helpText.bgColor = (152, 152, 152, 0)
-    if lastEnemyCreation < pygame.time.get_ticks() - 1000:
-        lastEnemyCreation = pygame.time.get_ticks()
-    shouldBeVisible = visibleBlocks(hero.truePos)
-    if shouldBeVisible != loadedBlocks and (not lastBlockLoad or lastBlockLoad < pygame.time.get_ticks() - 2000):
-        toLoad = shouldBeVisible - loadedBlocks
-        toUnload = loadedBlocks - shouldBeVisible
-        print "Loading", toLoad
-        print "Unloading", toUnload
-        for b in toLoad:
-            loadBlock(b)
-        for b in toUnload:
-            unloadBlock(b)
-        loadedBlocks = shouldBeVisible
-        lastBlockLoad = pygame.time.get_ticks()
-    hero.face(pygame.mouse.get_pos())
+        if buttons[2] and (not lastHeli or lastHeli < pygame.time.get_ticks() - 10000):
+            print "heli"
+            callHeli()
+            lastHeli = pygame.time.get_ticks()
+
+        if pygame.time.get_ticks() > 5000:
+            helpText.text = ""
+            helpText.bgColor = (152, 152, 152, 0)
+        if lastEnemyCreation < pygame.time.get_ticks() - 1000:
+            lastEnemyCreation = pygame.time.get_ticks()
+        shouldBeVisible = visibleBlocks(hero.truePos)
+        if shouldBeVisible != loadedBlocks and (not lastBlockLoad or lastBlockLoad < pygame.time.get_ticks() - 2000):
+            toLoad = shouldBeVisible - loadedBlocks
+            toUnload = loadedBlocks - shouldBeVisible
+            print "Loading", toLoad
+            print "Unloading", toUnload
+            for b in toLoad:
+                loadBlock(b)
+            for b in toUnload:
+                unloadBlock(b)
+            loadedBlocks = shouldBeVisible
+            lastBlockLoad = pygame.time.get_ticks()
+        hero.face(pygame.mouse.get_pos())
+
+    if titleTimeout <= 0:
+        title.kill()
+    elif any(buttons.values()):
+        gameStarted = True
+    elif gameStarted:
+        titleTimeout -= dT
+        print titleTimeout/2000*255
+        title.image.set_alpha(titleTimeout/2000*255)
+
     crosshair.rect.center = pygame.mouse.get_pos()
     refreshScreen()
