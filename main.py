@@ -391,7 +391,7 @@ while True:
     elif gameStarted:
         titleTimeout -= dT
         title.image.set_alpha(titleTimeout/2000*255)
-    elif any(buttons.values()):
+    elif any(buttons.values()) or any(keys.values()):
         gameStarted = True
         gui.add(gem)
         gui.add(moneyText)
