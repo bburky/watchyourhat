@@ -39,12 +39,12 @@ class ethunterone(RelativeSprite):
         #animate
         if self.alive and self.target:
             vel = Vec2d(self.target.truePos) - Vec2d(self.truePos)
-            vel.length = self.speed
-            self.truePos += vel
+            if vel.length < self.aware:
+                vel.length = self.speed
+                self.truePos += vel
         else:
             if hasattr(self, 'deathTime') and self.deathTime < pygame.time.get_ticks() - 1000:
                 self.kill()
-        RelativeSprite.update(self, dT) #handles move
 
     def move(self, (x,y)):
         self.truePos = [x,y]

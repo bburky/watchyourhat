@@ -10,16 +10,22 @@ from Config import Config
 from Hero import Hero
 from Enemies import *
 from RelativeSprite import RelativeSprite
+from Helicopter import Helicopter
+from Text import Text
 import time
 
-BG_COLOR = 0,255,255
+BG_COLOR = 69, 142, 36 #green
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
 keys = defaultdict(lambda: False)
+buttons = defaultdict(lambda: False)
 
 pygame.init()
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF|pygame.SRCALPHA)
+flags = pygame.DOUBLEBUF|pygame.SRCALPHA
+if "--fullscreen" in sys.argv:
+    flags |= pygame.FULLSCREEN
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
 
 random.seed(time.time())
 # set up sprite groups
@@ -29,6 +35,7 @@ middle = defaultdict(pygame.sprite.RenderUpdates)
 enemies = pygame.sprite.RenderUpdates()
 actors = pygame.sprite.RenderUpdates()
 upper = defaultdict(pygame.sprite.RenderUpdates)
+gui = pygame.sprite.Group()
 active = pygame.sprite.Group()
 lines = set()
 loadedBlocks = set()
@@ -44,6 +51,19 @@ active.add(hero)
 actors.add(hero)
 hero.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 
+fps = Text("")
+fps.rect.topleft = (0,0)
+fps.maxArea = Rect((0,0), (100, 300))
+fps.bgColor = (255,255,255,0)
+gui.add(fps)
+
+helpText = Text("")
+helpText.rect.topleft = (SCREEN_WIDTH-200, 300)
+helpText.maxArea = Rect((0,0), (100, 50))
+helpText.bgColor = (152,152,152,200)
+helpText.string = "Foo"
+gui.add(helpText)
+
 clock = pygame.time.Clock()
 
 def handleEvents(events):
@@ -57,30 +77,11 @@ def handleEvents(events):
         if e.type == QUIT:
             pygame.quit()
             sys.exit(0)
-        if e.type == MOUSEBUTTONDOWN and e.button == 1:
-            hero.shoot()
-            start = hero.rect.center
-            delta = Vec2d(1000, 0)
-            delta.rotate(-hero.theta)
-            end = Vec2d(start) + delta
-            intersecting = []
-            for e in enemies:
-                offsets = []
-                offsets.append(Vec2d(e.rect.topleft) - Vec2d(hero.rect.center))
-                offsets.append(Vec2d(e.rect.topright) - Vec2d(hero.rect.center))
-                offsets.append(Vec2d(e.rect.bottomleft) - Vec2d(hero.rect.center))
-                offsets.append(Vec2d(e.rect.bottomright) - Vec2d(hero.rect.center))
-                crosses = [o.cross(delta) for o in offsets]
-                if any(c >= 0 for c in crosses) and any(c <= 0 for c in crosses):
-                    dAngle = (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle
-                    if -10 < delta.angle - (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle < 10:
-                        intersecting.append(e)
-            intersecting.sort(key=lambda e: (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).length)
-            if intersecting: 
-                intersecting[0].damage(10)
-                lines.add(((0,0,0), start, intersecting[0].rect.center))
-            else:
-                lines.add(((0,0,0), start, end))
+        if e.type == MOUSEBUTTONDOWN:
+            buttons[e.button] = True
+        if e.type == MOUSEBUTTONUP:
+            buttons[e.button] = False
+
         elif e.type == MOUSEBUTTONDOWN and e.button == 3:
             #hero.knife()
             pass
@@ -117,6 +118,7 @@ def refreshScreen():
     lines.clear()
     for u in upper:
         upper[u].draw(screen)
+    gui.draw(screen)
     pygame.display.update(changes)
     pygame.display.flip()
 
@@ -207,10 +209,55 @@ def passable((x, y)):
             return False
     return True
 
+def shoot():
+    hero.shoot()
+    start = hero.rect.center
+    delta = Vec2d(1000, 0)
+    delta.rotate(-hero.theta)
+    end = Vec2d(start) + delta
+    intersecting = []
+    for e in enemies:
+        if not e.alive: continue
+        offsets = []
+        offsets.append(Vec2d(e.rect.topleft) - Vec2d(hero.rect.center))
+        offsets.append(Vec2d(e.rect.topright) - Vec2d(hero.rect.center))
+        offsets.append(Vec2d(e.rect.bottomleft) - Vec2d(hero.rect.center))
+        offsets.append(Vec2d(e.rect.bottomright) - Vec2d(hero.rect.center))
+        crosses = [o.cross(delta) for o in offsets]
+        if any(c >= 0 for c in crosses) and any(c <= 0 for c in crosses):
+            dAngle = (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle
+            if -10 < delta.angle - (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle < 10:
+                intersecting.append(e)
+    intersecting.sort(key=lambda e: (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).length)
+    if intersecting:
+        intersecting[0].damage(10)
+        lines.add(((0,0,0), start, intersecting[0].rect.center))
+    else:
+        lines.add(((0,0,0), start, end))
+
+def callHeli():
+    print "geduda choppa"
+    h = Helicopter()
+    h.truePos = [hero.truePos[0], hero.truePos[1]]
+    h.camera = hero
+    h.update(0)
+    h.target = hero
+    active.add(h)
+    actors.add(h)
+
+def addAlly(a):
+    a = Ally()
+    actors.add(a)
+    active.add(a)
+    return a
+
 lastEnemyCreation = 0
 lastBlockLoad = 0
+lastShot = -1
+lastHeli = 0
 while True:
     dT = clock.tick(60)
+    fps.string = "%.2f" % (1000.0/dT)
     handleEvents(pygame.event.get())
     active.update(dT)
     if keys[K_w]:
@@ -222,6 +269,18 @@ while True:
     if keys[K_d]:
         hero.truePos[0] += hero.speed*dT/1000
 
+    if buttons[1] and lastShot < pygame.time.get_ticks() - 100:
+        shoot()
+        lastShot = pygame.time.get_ticks()
+
+    if buttons[2] and (not lastHeli or lastHeli < pygame.time.get_ticks() - 10000):
+        print "heli"
+        callHeli()
+        lastHeli = pygame.time.get_ticks()
+
+    if pygame.time.get_ticks() > 5000:
+        helpText.text = ""
+        helpText.bgColor = (152, 152, 152, 0)
     if lastEnemyCreation < pygame.time.get_ticks() - 1000:
         lastEnemyCreation = pygame.time.get_ticks()
     shouldBeVisible = visibleBlocks(hero.truePos)
