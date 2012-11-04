@@ -28,9 +28,9 @@ class cat(RelativeSprite):
         if not cat.images:
             ss = Spritesheet('tiles-bottom.png')
             cat.images['idle'] = []
-            cat.images['idle'].append(ss.image_at(Rect(12*45, 3*45, 45, 90)))
-            cat.images['idle'].append(ss.image_at(Rect(14*45, 3*45, 45, 90)))
-            cat.images['dead'].append(ss.image_at(Rect(10*45, 3*45, 45, 90)))
+            cat.images['idle'].append(ss.image_at(Rect(12*45, 3*45, 90, 90)))
+            cat.images['idle'].append(ss.image_at(Rect(14*45, 3*45, 90, 90)))
+            cat.images['dead'] = ss.image_at(Rect(10*45, 3*45, 90, 90))
         self.i = 0
         self.image = cat.images['idle'][self.i]
         self.rect = self.image.get_rect()
@@ -63,7 +63,7 @@ class cat(RelativeSprite):
         if self.alive and self.target:
             pos = self.target.rect.center
             targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-            self.image = rot_center(self.image, -90-targetDir)
+            self.image = rot_center(self.image, -targetDir)
 
         #animate
         if self.alive and self.target:
