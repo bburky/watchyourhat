@@ -235,6 +235,11 @@ title.rect = title.image.get_rect()
 title.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 gui.add(title)
 
+gameover = pygame.sprite.Sprite()
+gameover.image = load_image('gameover.png')
+gameover.rect = gameover.image.get_rect()
+gameover.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+
 gem = pygame.sprite.Sprite()
 gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))
 gem.rect = gem.image.get_rect()
@@ -535,6 +540,8 @@ while True:
                 hero.truePos[0] += -hero.speed*dT/1000
             if keys[K_d]:
                 hero.truePos[0] += hero.speed*dT/1000
+        else:
+            gui.add(gameover)
 
         if buttons[1] and lastShot < pygame.time.get_ticks() - 500:
             shoot()
