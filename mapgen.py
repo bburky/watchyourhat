@@ -7,34 +7,46 @@ img_id = 0 # image_id
 layer = 1 # -1 = Background | 0 = Collides | 1 = Foreground
 
 # Grass
-tiles[0] = [None, -1]
+tiles[0] = [(5, 4), -1]
 
 # Tree Trunk
-tiles[1] = [None, 0]
+tiles[1] = [(2, 1), 0]
 
 # Tree Foilage
-tiles[2] = [None, 1]
-tiles[3] = [None, 1]
-tiles[4] = [None, 1]
-tiles[5] = [None, 1]
-tiles[6] = [None, 1]
-tiles[7] = [None, 1]
-tiles[8] = [None, 1]
-tiles[9] = [None, 1]
+tiles[2] = [(1, 0), 1]
+tiles[3] = [(2, 0), 1]
+tiles[4] = [(3, 0), 1]
+tiles[5] = [(1, 1), 1]
+tiles[6] = [(3, 1), 1]
+tiles[7] = [(1, 2), 1]
+tiles[8] = [(2, 2), 1]
+tiles[9] = [(3, 2), 1]
 
 # Helicopter Top Left
-tiles[100] = [None, -1]
+tiles[100] = [(5, 1), -1]
 
 # Helicopter Clearing
-tiles[101] = [None, -1]
-tiles[102] = [None, -1]
-tiles[103] = [None, -1]
-tiles[104] = [None, -1]
-tiles[105] = [None, -1]
-tiles[106] = [None, -1]
-tiles[107] = [None, -1]
-tiles[108] = [None, -1]
-tiles[109] = [None, -1]
+tiles[101] = [(5, 1), -1]
+
+# (dark in center)
+tiles[102] = [(4, 3), -1]
+tiles[103] = [(5, 3), -1]
+tiles[104] = [(6, 3), -1]
+tiles[105] = [(4, 4), -1]
+tiles[106] = [(6, 4), -1]
+tiles[107] = [(4, 5), -1]
+tiles[108] = [(5, 5), -1]
+tiles[109] = [(6, 5), -1]
+
+# (light in center)
+tiles[110] = [(4, 0), -1]
+tiles[111] = [(5, 0), -1]
+tiles[112] = [(6, 0), -1]
+tiles[113] = [(4, 1), -1]
+tiles[114] = [(6, 1), -1]
+tiles[115] = [(4, 2), -1]
+tiles[116] = [(5, 2), -1]
+tiles[117] = [(6, 2), -1]
 
 def gen_block(seed):
     sz_x = sz_y = 64
@@ -47,6 +59,7 @@ def gen_block(seed):
     mp_type = random.sample([0]*100 + [1]*100, 1)[0]
     bg = {}
     fg = {}
+    en = {}
     print "-"*8
     print mp_type
     print "-"*8
@@ -72,17 +85,32 @@ def gen_block(seed):
         # Edge of the clearing
         # (Diagonal Edges)
         blocked.add((y-2, x-1))
-        mp[y-2][x-1] = 102
-        
+        mp[y-2][x-1] = 109
         blocked.add((y-2, x+3))
-        mp[y-2][x+3] = 104
-        
+        mp[y-2][x+3] = 107
         blocked.add((y+3, x-1))
-        mp[y+3][x-1] = 107
-        
+        mp[y+3][x-1] = 104
         blocked.add((y+3, x+3))
-        mp[y+3][x+3] = 109
-        
+        mp[y+3][x+3] = 102
+		
+        blocked.add((y-3, x-1))
+        mp[y-3][x-1] = 110
+        blocked.add((y-3, x+3))
+        mp[y-3][x+3] = 112
+        blocked.add((y+4, x-1))
+        mp[y+4][x-1] = 115
+        blocked.add((y+4, x+3))
+        mp[y+4][x+3] = 117
+		
+        blocked.add((y-2, x-3))
+        mp[y-2][x-3] = 110
+        blocked.add((y-2, x+5))
+        mp[y-2][x+5] = 112
+        blocked.add((y+3, x-3))
+        mp[y+3][x-3] = 115
+        blocked.add((y+3, x+5))
+        mp[y+3][x+5] = 117
+		
         # (Linear Edges)
         top_edge = [(y-2, x-2), (y-3, x), (y-3, x+1), (y-3, x+2), (y-2, x+4)]
         bot_edge = [(y+3, x-2), (y+4, x), (y+4, x+1), (y+4, x+2), (y+3, x+4)]
@@ -91,19 +119,19 @@ def gen_block(seed):
         
         for j, i in top_edge:
             blocked.add((j, i))
-            mp[j][i] = 103
+            mp[j][i] = 108
     
         for j, i in left_edge:
             blocked.add((j, i))
-            mp[j][i] = 105
+            mp[j][i] = 106
     
         for j, i in right_edge:
             blocked.add((j, i))
-            mp[j][i] = 106
+            mp[j][i] = 105
     
         for j, i in bot_edge:
             blocked.add((j, i))
-            mp[j][i] = 108
+            mp[j][i] = 103
     
     # Generate Trees
     trees = set([])
@@ -126,13 +154,22 @@ def gen_block(seed):
         fg[(tr[0]+1, tr[1])] = 8
         fg[(tr[0]+1, tr[1]+1)] = 9
     
-    
     for j in xrange(sz_y):
         for i in xrange(sz_x):
-            bg[(x, y)] = mp[j][i]
+            bg[(i, j)] = mp[j][i]
     
-    print "\n".join("".join(str(i) for i in r) for r in mp)
-    return bg, fg
+    #print "\n".join("".join(str(i) for i in r) for r in mp)
+    
+    # Generate Enemies
+    en_fq = 10
+    while len(en) < en_fq:
+        x = random.randrange(1, sz_x - 2)
+        y = random.randrange(1, sz_y - 2)
+        if (x, y) in en or (x, y) in blocked: continue
+        
+        en[(x,y)] = 1
+    print en
+    return bg, fg, en
 
 m = gen_block(36731233)
 
