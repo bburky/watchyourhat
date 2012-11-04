@@ -473,15 +473,16 @@ def shoot():
         lines.add(((0,0,0), start, end))
 
 def slash():
-    hero.slash()
-    collisions = pygame.sprite.spritecollide(hero, enemies, False)
-    collisions += pygame.sprite.spritecollide(hero, allies, False)
-    for c in collisions:
-        c.damage(30)
-        if isinstance(c, Ally):
-            multiplayer.s.send('6 %d %d;' % (c.n, 30))
-        else:
-            multiplayer.s.send('5 %d %d;' % (c.n, 30) )
+    if hero.alive:
+        hero.slash()
+        collisions = pygame.sprite.spritecollide(hero, enemies, False)
+        collisions += pygame.sprite.spritecollide(hero, allies, False)
+        for c in collisions:
+            c.damage(30)
+            if isinstance(c, Ally):
+                multiplayer.s.send('6 %d %d;' % (c.n, 30))
+            else:
+                multiplayer.s.send('5 %d %d;' % (c.n, 30) )
 
 def callHeli():
     print "geduda choppa"
@@ -527,7 +528,6 @@ while True:
         active.update(dT)
         hurters = pygame.sprite.spritecollide(hero, enemies, False)
         for spr in hurters:
-            print spr
             if spr.attackTimeout <= 0:
                 hero.damage(spr.power)
                 spr.attackTimeout = 1000
