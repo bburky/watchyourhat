@@ -20,7 +20,6 @@ import threading
 
 # Sterling's tired. This is his network code. Sorry.
 
-
 hero = None
 
 all_generated = False
@@ -32,9 +31,11 @@ enemies_n = 1
 
 def manage_network():
     global hero
-    my_id = -1
-    if multiplayer.hosting: my_id = 0
     allies2 = {}
+    my_id = -1
+    if multiplayer.hosting:
+        my_id = 0
+        allies2[my_id] = hero
     while not all_generated: time.sleep(.5)
     
     enemy_update_time = time.time()
@@ -72,6 +73,7 @@ def manage_network():
 
             if m_t == 0:
                 my_id = int(m[1])
+                allies2[my_id] = hero
             elif m_t == 1:
                 if len(multiplayer.msg_buff) > 500: continue
                 i = int(m[1])
