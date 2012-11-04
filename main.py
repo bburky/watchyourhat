@@ -223,13 +223,16 @@ def shoot():
         offsets.append(Vec2d(e.rect.bottomright) - Vec2d(hero.rect.center))
         crosses = [o.cross(delta) for o in offsets]
         if any(c >= 0 for c in crosses) and any(c <= 0 for c in crosses):
-            dAngle = (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle
-            if -10 < delta.angle - (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle < 10:
+            if -45 < delta.angle - (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle < 45:
                 intersecting.append(e)
     intersecting.sort(key=lambda e: (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).length)
     if intersecting:
-        intersecting[0].damage(10)
-        lines.add(((0,0,0), start, intersecting[0].rect.center))
+        off = Vec2d(intersecting[0].rect.center) - Vec2d(hero.rect.center)
+        if off.length < SCREEN_WIDTH:
+            intersecting[0].damage(10)
+            lines.add(((0,0,0), start, intersecting[0].rect.center))
+        else:
+            lines.add(((0,0,0), start, end))
     else:
         lines.add(((0,0,0), start, end))
 

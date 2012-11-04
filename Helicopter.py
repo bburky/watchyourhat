@@ -20,11 +20,9 @@ class Helicopter(RelativeSprite):
         RelativeSprite.update(self, dT)
         if self.target:
             vel = Vec2d(self.target.truePos) - Vec2d(self.truePos)
-            print self.target.truePos, self.truePos
             if vel.length:
                 vel.length = self.speed
             self.truePos += vel
-            print self.truePos
 
         self.chFrameTimeout -= dT
         if self.chFrameTimeout <= 0:

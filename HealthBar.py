@@ -1,11 +1,12 @@
 import pygame
 from pygame.locals import *
 from pygame.color import THECOLORS
+
+cache = {}
 class HealthBar(pygame.sprite.Sprite):
     def __init__(self, target=None):
         pygame.sprite.Sprite.__init__(self)
         self.target = target
-        print "hb on %s" % self.target
         self.padding = [1,1]
         self.prevPercent = -1
         self.rect = Rect((0,0), (0,0))
@@ -17,21 +18,25 @@ class HealthBar(pygame.sprite.Sprite):
             pass
         else:
             self.prevPercent = perc
-            x = 0
-            y = 0
-            wid = self.target.rect.width
-            hei = self.target.rect.height * 0.20
-            self.image = pygame.Surface((wid, hei))
-            pygame.draw.rect(self.image, (0,0,0), Rect((x, y), (wid, hei)))
+            if perc not in cache:
+                x = 0
+                y = 0
+                wid = self.target.rect.width
+                hei = self.target.rect.height * 0.20
+                self.image = pygame.Surface((wid, hei))
+                pygame.draw.rect(self.image, (0,0,0), Rect((x, y), (wid, hei)))
 
-            x += self.padding[0]
-            wid -= self.padding[0]*2
-            y += self.padding[1]
-            hei -= self.padding[1]*2
-            pygame.draw.rect(self.image, THECOLORS['red'], Rect((x,y), (wid,hei)))
+                x += self.padding[0]
+                wid -= self.padding[0]*2
+                y += self.padding[1]
+                hei -= self.padding[1]*2
+                pygame.draw.rect(self.image, THECOLORS['red'], Rect((x,y), (wid,hei)))
 
-            wid *= perc
-            pygame.draw.rect(self.image, THECOLORS['green'], Rect((x,y), (wid,hei)))
+                wid *= perc
+                pygame.draw.rect(self.image, THECOLORS['green'], Rect((x,y), (wid,hei)))
+
+                cache[perc] = self.image
+            self.image = cache[perc]
 
         self.rect.left = self.target.rect.x
         self.rect.top = self.target.rect.y - self.target.rect.height * 0.20
