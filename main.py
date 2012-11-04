@@ -267,7 +267,7 @@ def passable((x, y)):
 
 def shoot():
     global remainingBullets
-    if not hero.shoot():
+    if not hero.alive:
         return
     bulletsText.text = str(hero.ammo)
     print hero.ammo

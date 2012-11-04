@@ -19,7 +19,7 @@ class Hero(pygame.sprite.Sprite):
             Hero.images['idle'] = ssFoo.image_at(Rect(0*45, 4*45, 45, 45))
             Hero.images['shooting'] = ssFoo.image_at(Rect(0*45, 6*45, 45, 45))
             Hero.images['knife'] = ssFoo.image_at(Rect(7*45, 6*45, 45, 45))
-            Hero.images['dead'] = ssFoo.image_at(Rect(13*45, 3*45, 45, 45))
+            Hero.images['dead'] = ssFoo.image_at(Rect(1*45, 6*45, 45, 45))
         self.image = Hero.images['shooting']
         self.rect = self.image.get_rect()
         self.speed = Hero.speed
@@ -51,7 +51,6 @@ class Hero(pygame.sprite.Sprite):
             self.shootTimeout = 500
             self.image = self.rot_center(Hero.images['shooting'], -90+self.theta)
             self.ammo -= 1
-            return True
         else:
             self.reload()
             return False
@@ -61,12 +60,17 @@ class Hero(pygame.sprite.Sprite):
             self.reloadTimeout = Hero.RELOAD_TIME
 
     def slash(self):
-        self.slashTimeout = 200
-        self.image = self.rot_center(Hero.images['knife'], -90+self.theta)
+        if self.alive:
+            self.slashTimeout = 200
+            self.image = self.rot_center(Hero.images['knife'], -90+self.theta)
+        else:
+            return False
 
     def face(self, pos):
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-        if self.slashTimeout > 0:
+        if not self.alive:
+            imageString = 'dead'
+        elif self.slashTimeout > 0:
             imageString = 'knife'
         elif self.shootTimeout > 0:
             imageString = 'shooting'
