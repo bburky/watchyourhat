@@ -64,4 +64,4 @@ class Ally(RelativeSprite):
         if self.slashTimeout > 0:
             self.slashTimeout -= dT
         if self.shootTimeout <= 0 and self.slashTimeout <= 0:
-            self.image = self.rot_center(Hero.images['idle'], -90+self.theta)
+            self.image = self.rot_center(Ally.images['idle'], -90+self.theta)
