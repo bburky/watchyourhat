@@ -190,6 +190,7 @@ allies = pygame.sprite.RenderUpdates()
 upper = defaultdict(pygame.sprite.RenderUpdates)
 gui = pygame.sprite.RenderUpdates()
 active = pygame.sprite.RenderUpdates()
+items = pygame.sprite.Group()
 lines = set()
 loadedBlocks = set()
 
@@ -200,7 +201,6 @@ background = None
 
 #some state
 random.seed(time.time())
-remainingBullets = 15
 
 hero = Hero()
 active.add(hero)
@@ -257,7 +257,7 @@ bullets.rect = bullets.image.get_rect()
 bullets.rect.right -= 100
 bullets.rect.topleft = (0, SCREEN_HEIGHT-45)
 
-bulletsText = Text(str(remainingBullets))
+bulletsText = Text(str(hero.ammo))
 bulletsText.color = (255, 0, 0)
 bulletsText.bgColor = (0,0,0,0)
 bulletsText.rect.topleft = Vec2d(bullets.rect.topright) + Vec2d(5, 18)
@@ -274,12 +274,12 @@ def handleEvents(events):
             if e.key == K_ESCAPE:
                 pygame.quit()
         if e.type == KEYDOWN and e.key == K_e:
-            pass
-            #for i in items:
-            #    if i.rect.colliderect(hero.rect):
-            #        i.pickup()
-            #        i.kill()
-            #        moneyText = str(int(moneyText.string) + i.worth())
+            for i in items:
+                if i.rect.colliderect(hero.rect):
+                    i.pickup()
+                    i.kill()
+                    moneyText = str(int(moneyText.string) + i.worth())
+                    break
         elif e.type == KEYDOWN and e.key == K_r:
             hero.reload()
             musica.pistolreload()
@@ -356,7 +356,7 @@ def generateTiles(block):
         prevGenerated = False
         seeds[block] = random.randrange(0,10000000)
 
-    bg, fg, en = mapgen.gen_block(seeds[block])
+    bg, fg, en, it = mapgen.gen_block(seeds[block])
     for b in bg:
         x, y = mapgen.tiles[bg[b]][0]
         wid = hei = Config['PIXELS_PER_TILE']
@@ -410,6 +410,22 @@ def generateTiles(block):
             spr.n = enemies_n
             enemies_n += 1
             enemies_list_lock.release()
+
+    for i in it:
+        (x, y) = (3, 3)
+        wid = hei = Config['PIXELS_PER_TILE']
+        rec = Rect((x*wid, y*hei), (wid, hei))
+        img = ssTop.image_at(rec)
+        truePos = [block[0]*Config['PIXELS_PER_BLOCK']+i[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+i[1]*45]
+
+        spr = Gem(*truePos)
+        spr.setCamera(hero)
+        spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+        spr.update(0)
+        items.add(spr)
+        active.add(spr)
+        actors.add(spr)
+        gpEnem.add(spr)
 
     return gpBack, gpFore, gpEnem
 
