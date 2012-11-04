@@ -77,7 +77,6 @@ def visibleBlocks(pos):
            ])
 
 def refreshScreen():
-    screen.fill(BG_COLOR)
     changes = []
     for l in lower:
         lower[l].draw(screen)
@@ -146,7 +145,7 @@ def unloadBlock(b):
 
 while True:
     dT = clock.tick(60)
-    print dT
+    print 1000.0/dT
     handleEvents(pygame.event.get())
     active.update(dT)
     if keys[K_w]:
