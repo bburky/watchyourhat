@@ -16,6 +16,8 @@ class Music:
         self.cathurt = self.sound.Sound('data/catdmg.wav')
         self.gemp = self.sound.Sound('data/gem.wav')
         self.pistolrel = self.sound.Sound('data/reload.wav')
+        self.empty = self.sound.Sound('data/empty.wav')
+        self.swish = self.sound.Sound('data/swish.wav')
         if not self.sound: print 'Warning, sound disabled'
     def pistolshot(self):
         pistolshot = self.sound.Sound('data/gunshotshort.wav')
@@ -40,6 +42,10 @@ class Music:
         self.helicopter.fadeout(2000)
     def catdmg(self):
         self.cathurt.play(0)
+    def knife(self):
+        self.swish.play(0)
+    def emptymag(self):
+        self.empty.play(0)
     def junglestart(self): #starts jungle music stops underground music
         self.underground.fadeout(5000)
         pygame.time.delay(5000)
