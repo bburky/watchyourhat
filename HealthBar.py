@@ -33,8 +33,9 @@ class HealthBar(pygame.sprite.Sprite):
                 hei -= self.padding[1]*2
                 pygame.draw.rect(self.image, THECOLORS['red'], Rect((x,y), (wid,hei)))
 
-                wid *= perc
-                pygame.draw.rect(self.image, THECOLORS['green'], Rect((x,y), (wid,hei)))
+                if perc > 0:
+                    wid *= perc
+                    pygame.draw.rect(self.image, THECOLORS['green'], Rect((x,y), (wid,hei)))
 
                 cache[perc] = self.image
             self.image = cache[perc]
