@@ -31,12 +31,13 @@ enemies_n = 1
 
 def manage_network():
     global hero
+    while not all_generated: time.sleep(.5)
+    
     allies2 = {}
     my_id = -1
     if multiplayer.hosting:
         my_id = 0
         allies2[my_id] = hero
-    while not all_generated: time.sleep(.5)
     
     enemy_update_time = time.time()
     while True:
