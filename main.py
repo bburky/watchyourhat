@@ -24,6 +24,7 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF
 # set up sprite groups
 seeds = {}
 lower = defaultdict(pygame.sprite.RenderUpdates)
+middle = defaultdict(pygame.sprite.RenderUpdates)
 actors = pygame.sprite.RenderUpdates()
 upper = defaultdict(pygame.sprite.RenderUpdates)
 active = pygame.sprite.Group()
@@ -119,37 +120,28 @@ def generateTiles(block):
         active.add(spr)
         gpFore.add(spr)
 
-    return gpBack, gpFore
+    for e in en:
+        x, y = mapgen.tiles[en[e]][0]
+        wid = hei = Config['PIXELS_PER_TILE']
+        rec = Rect((x*wid, y*hei), (wid, hei))
+        img = ssTop.image_at(rec)
+        spr = RelativeSprite(camera=hero)
+        spr.image = img
+        spr.rect = img.get_rect()
+        spr.truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
+        active.add(spr)
+        gpEnem.add(spr)
+
+    return gpBack, gpFore, gpEnem
 
 def loadBlock(b):
-    lower[b], upper[b] = generateTiles(b)
-#    gp = pygame.sprite.Group()
-#    img = ssBottom.image_at(Rect((1*45, 0*45), (45, 45)))
-#    spr = RelativeSprite(camera=hero)
-#    spr.image = img
-#    spr.rect = img.get_rect()
-#    spr.truePos = [b[0]*Config['PIXELS_PER_BLOCK']+45, b[1]*Config['PIXELS_PER_BLOCK']+45]
-#    gp.add(spr)
-#    active.add(spr)
-#
-#    lower[b] = gp
-#
-#    gp = pygame.sprite.Group()
-#
-#    img = ssTop.image_at(Rect((3*45, 1*45), (45, 45)))
-#    spr = RelativeSprite(camera=hero)
-#    spr.image = img
-#    spr.rect = img.get_rect()
-#    spr.truePos = [b[0]*Config['PIXELS_PER_BLOCK']+0, b[1]*Config['PIXELS_PER_BLOCK']+0]
-#    gp.add(spr)
-#    active.add(spr)
-#
-#    upper[b] = gp
-#
+    lower[b], upper[b], middle[b] = generateTiles(b)
 
 def unloadBlock(b):
-    lower[b].empty()
-    upper[b].empty()
+    for s in lower[b]:
+        s.kill()
+    for s in upper[b]:
+        s.kill()
     del lower[b], upper[b]
 
 while True:
@@ -165,8 +157,6 @@ while True:
         hero.truePos[0] += -hero.speed*dT/1000
     if keys[K_d]:
         hero.truePos[0] += hero.speed*dT/1000
-
-    print hero.truePos
 
     shouldBeVisible = visibleBlocks(hero.truePos)
     if shouldBeVisible != loadedBlocks:
