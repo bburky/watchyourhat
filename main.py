@@ -334,10 +334,6 @@ def addAlly():
     active.add(hb)
     return a
 
-ally = addAlly()
-ally.truePos = [0, 0]
-ally.update(0)
-
 lastEnemyCreation = 0
 lastBlockLoad = 0
 lastShot = -1
