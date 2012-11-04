@@ -96,7 +96,6 @@ def manage_network():
                 allies2[i].truePos = list(multiplayer.pos[i][:2])
                 allies2[i].theta = multiplayer.pos[i][2]
             elif m_t == 2:
-                if len(multiplayer.msg_buff) > 500: continue
                 en_t = int(m[1])
                 
                 i, x, y, tgt = [int(i) for i in m[2:]]
@@ -112,6 +111,7 @@ def manage_network():
                     truePos = [x, y]
                     spr = None
                     if en_t == 2:
+                        print "got a cat"
                         spr = cat(*truePos)
                     else:
                         spr = ethunterone(*truePos)
@@ -592,6 +592,8 @@ while True:
         for spr in hurters:
             if spr.attackTimeout <= 0 and spr.alive:
                 hero.damage(spr.power)
+                multiplayer.s.send('6 %d %d;' % (hero.n, spr.power))
+                multiple
                 spr.attackTimeout = 1000
         if hero.alive:
             if keys[K_w]:
