@@ -23,7 +23,7 @@ tiles[8] = [(2, 2), 1]
 tiles[9] = [(3, 2), 1]
 
 # Bush Foilage
-tiles[10] = [(1, 4), 1]
+tiles[10] = [(2, 6), 1]
 
 # Helicopter Top Left
 tiles[100] = [(5, 1), -1]
