@@ -12,6 +12,7 @@ from Enemies import *
 from RelativeSprite import RelativeSprite
 from Helicopter import Helicopter
 from Text import Text
+from HealthBar import HealthBar
 import time
 
 BG_COLOR = 23, 82, 8 #green
@@ -50,6 +51,10 @@ hero = Hero()
 active.add(hero)
 actors.add(hero)
 hero.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+hb = HealthBar(target=hero)
+active.add(hb)
+actors.add(hb)
+
 
 fps = Text("")
 fps.rect.topleft = (0,0)
@@ -177,6 +182,10 @@ def generateTiles(block):
             spr.attack(hero)
             gpEnem.add(spr)
 
+            hb = HealthBar(target=spr)
+            actors.add(hb)
+            active.add(hb)
+
     return gpBack, gpFore, gpEnem
 
 def loadBlock(b):
@@ -189,17 +198,6 @@ def unloadBlock(b):
         s.kill()
     del lower[b], upper[b]
 
-def createEnemies():
-    pos = hero.truePos
-    tPos = [pos[0]+300, pos[1]+300]
-    en = ethunterone(*tPos)
-    en.setCamera(hero)
-    en.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
-    en.update(0)
-    enemies.add(en)
-    actors.add(en)
-    active.add(en)
-    en.attack(hero)
 
 def passable((x, y)):
     block = whichBlock((x, y))
@@ -252,6 +250,10 @@ def addAlly(a):
     a.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.y))
     actors.add(a)
     active.add(a)
+
+    hb = HealthBar(target=a)
+    actors.add(hb)
+    active.add(hb)
     return a
 
 lastEnemyCreation = 0

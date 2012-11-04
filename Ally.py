@@ -7,6 +7,7 @@ from helpers import *
 class Ally(RelativeSprite):
     images = {}
     speed = 200.0
+    maxHealth = 100
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         if not Hero.images:
@@ -18,7 +19,7 @@ class Ally(RelativeSprite):
         self.speed = Hero.speed
         self.theta = 0.0
 
-        self.health = 100
+        self.health = Hero.maxHealth
 
         self.shootTimeout = -1
     

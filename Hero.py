@@ -7,6 +7,7 @@ from helpers import *
 class Hero(pygame.sprite.Sprite):
     images = {}
     speed = 200.0
+    maxHealth = 100
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         if not Hero.images:
@@ -19,7 +20,7 @@ class Hero(pygame.sprite.Sprite):
         self.theta = 0.0
         self.truePos = list(self.rect.center)
 
-        self.health = 100
+        self.health = Hero.maxHealth
 
         self.shootTimeout = -1
     

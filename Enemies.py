@@ -15,10 +15,11 @@ def rot_center(image, angle):
 class ethunterone(RelativeSprite):
     """ Hostile Enemy Hunter Class """
     images = {}
+    maxHealth = 30
     def __init__(self, x, y):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
-        self.health = 30
+        self.health = ethunterone.maxHealth
         self.aware = Config['PIXELS_PER_TILE']*20
         #self.id = id
         self.speed = 3
