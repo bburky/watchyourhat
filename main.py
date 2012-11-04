@@ -57,12 +57,13 @@ def handleEvents(events):
         if e.type == QUIT:
             pygame.quit()
             sys.exit(0)
-        if e.type == MOUSEBUTTONDOWN:
+        if e.type == MOUSEBUTTONDOWN and e.button == 1:
+            hero.shoot()
             start = hero.rect.center
             delta = Vec2d(1000, 0)
             delta.rotate(-hero.theta)
             end = Vec2d(start) + delta
-            lines.add(((0,0,0), start, end))
+            intersecting = []
             for e in enemies:
                 offsets = []
                 offsets.append(Vec2d(e.rect.topleft) - Vec2d(hero.rect.center))
@@ -73,7 +74,16 @@ def handleEvents(events):
                 if any(c >= 0 for c in crosses) and any(c <= 0 for c in crosses):
                     dAngle = (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle
                     if -10 < delta.angle - (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle < 10:
-                        e.damage(10)
+                        intersecting.append(e)
+            intersecting.sort(key=lambda e: (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).length)
+            if intersecting: 
+                intersecting[0].damage(10)
+                lines.add(((0,0,0), start, intersecting[0].rect.center))
+            else:
+                lines.add(((0,0,0), start, end))
+        elif e.type == MOUSEBUTTONDOWN and e.button == 3:
+            #hero.knife()
+            pass
 
 def whichBlock(pos):
     # calculates the block that the position is part of
@@ -115,7 +125,9 @@ def generateTiles(block):
     gpFore = pygame.sprite.Group()
     gpEnem = pygame.sprite.Group()
 
+    prevGenerated = True
     if block not in seeds:
+        prevGenerated = False
         seeds[block] = random.random()
 
     bg, fg, en = mapgen.gen_block(seeds[block])
@@ -145,18 +157,23 @@ def generateTiles(block):
         active.add(spr)
         gpFore.add(spr)
 
-    for e in en:
-        x, y = mapgen.tiles[en[e]][0]
-        wid = hei = Config['PIXELS_PER_TILE']
-        rec = Rect((x*wid, y*hei), (wid, hei))
-        img = ssTop.image_at(rec)
-        spr = RelativeSprite(camera=hero, offset=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
-        spr.image = img
-        spr.rect = img.get_rect()
-        spr.truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
-        spr.passable = False
-        active.add(spr)
-        gpEnem.add(spr)
+    if not prevGenerated:
+        for e in en:
+            x, y = mapgen.tiles[en[e]][0]
+            wid = hei = Config['PIXELS_PER_TILE']
+            rec = Rect((x*wid, y*hei), (wid, hei))
+            img = ssTop.image_at(rec)
+
+            truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
+            spr = ethunterone(*truePos)
+            spr.setCamera(hero)
+            spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+            spr.update(0)
+            enemies.add(spr)
+            actors.add(spr)
+            active.add(spr)
+            spr.attack(hero)
+            gpEnem.add(spr)
 
     return gpBack, gpFore, gpEnem
 
@@ -176,6 +193,7 @@ def createEnemies():
     en = ethunterone(*tPos)
     en.setCamera(hero)
     en.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+    en.update(0)
     enemies.add(en)
     actors.add(en)
     active.add(en)
@@ -205,7 +223,6 @@ while True:
         hero.truePos[0] += hero.speed*dT/1000
 
     if lastEnemyCreation < pygame.time.get_ticks() - 1000:
-        createEnemies()
         lastEnemyCreation = pygame.time.get_ticks()
     shouldBeVisible = visibleBlocks(hero.truePos)
     if shouldBeVisible != loadedBlocks and (not lastBlockLoad or lastBlockLoad < pygame.time.get_ticks() - 2000):

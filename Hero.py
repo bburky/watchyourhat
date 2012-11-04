@@ -12,15 +12,16 @@ class Hero(pygame.sprite.Sprite):
         if not Hero.images:
             ssFoo = Spritesheet('tiles-bottom.png')
             Hero.images['idle'] = ssFoo.image_at(Rect(0*45, 4*45, 45, 45))
-        self.image = Hero.images['idle']
+            Hero.images['shooting'] = ssFoo.image_at(Rect(0*45, 6*45, 45, 45))
+        self.image = Hero.images['shooting']
         self.rect = self.image.get_rect()
         self.speed = Hero.speed
         self.theta = 0.0
         self.truePos = list(self.rect.center)
 
-        self.image = pygame.Surface((self.image.get_width()*2, self.image.get_height()*2))
-        self.image.blit(Hero.images['idle'], (self.image.get_width()/4, self.image.get_height()/4))
         self.health = 100
+
+        self.shootTimeout = -1
     
     def rot_center(self, image, angle):
         """rotate an image while keeping its center and size"""
@@ -31,10 +32,24 @@ class Hero(pygame.sprite.Sprite):
         rot_image = rot_image.subsurface(rot_rect).copy()
         return rot_image
 
+    def shoot(self):
+        self.shootTimeout = 200
+        self.image = self.rot_center(Hero.images['shooting'], -90+self.theta)
+
     def face(self, pos):
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-        self.image = self.rot_center(Hero.images['idle'], -90-targetDir)
+        if self.shootTimeout > 0:
+            imageString = 'shooting'
+        else:
+            imageString = 'idle'
+        self.image = self.rot_center(Hero.images[imageString], -90-targetDir)
         self.theta = -targetDir
 
     def damage(self, amount):
         self.health -= amount
+
+    def update(self, dT):
+        if self.shootTimeout > 0:
+            self.shootTimeout -= dT
+            if self.shootTimeout <= 0:
+                self.image = self.rot_center(Hero.images['idle'], -90+self.theta)

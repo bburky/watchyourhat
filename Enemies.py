@@ -9,20 +9,19 @@ class ethunterone(RelativeSprite):
     def __init__(self, x, y):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
-        self.health = 100
+        self.health = 30
         self.aware = Config['PIXELS_PER_TILE']*20
         #self.id = id
-        self.speed = Config['PIXELS_PER_TILE']/20
+        self.speed = 3
         if not ethunterone.images:
             ss = Spritesheet('tiles-bottom.png')
             ethunterone.images['idle'] = ss.image_at(Rect(0*45, 5*45, 45, 45))
-            ethunterone.images['dead'] = ss.image_at(Rect(0*45, 5*45, 45, 45))
+            ethunterone.images['dead'] = ss.image_at(Rect(1*45, 5*45, 45, 45))
         self.image = ethunterone.images['idle']
         self.rect = self.image.get_rect()
         self.truePos = [x, y]
-        print self.truePos
         self.range = 50
-        self.target = (0,0)
+        self.target = None
     def attack(self, player):
         self.target = player
         #leave to sterling
@@ -36,13 +35,14 @@ class ethunterone(RelativeSprite):
         self.image = ethunterone.images['dead']
         return self
     def update(self, dT):
+        RelativeSprite.update(self, dT)
         #animate
-        if self.alive:
+        if self.alive and self.target:
             vel = Vec2d(self.target.truePos) - Vec2d(self.truePos)
             vel.length = self.speed
             self.truePos += vel
         else:
-            if self.deathTime < pygame.time.get_ticks() - 1000:
+            if hasattr(self, 'deathTime') and self.deathTime < pygame.time.get_ticks() - 1000:
                 self.kill()
         RelativeSprite.update(self, dT) #handles move
 
