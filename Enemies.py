@@ -18,6 +18,7 @@ class cat(RelativeSprite):
     images = {}
     maxHealth = 50
     attackTimeout = 1000
+    power = 10
     def __init__(self, x, y):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
@@ -96,6 +97,7 @@ class ethunterone(RelativeSprite):
     images = {}
     maxHealth = 30
     attackTimeout = 1000
+    power = 10
     def __init__(self, x, y):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth

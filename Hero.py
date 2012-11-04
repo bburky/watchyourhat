@@ -55,6 +55,10 @@ class Hero(pygame.sprite.Sprite):
         else:
             return False
 
+    def reload(self):
+        if self.reloadTimeout <= 0:
+            self.reloadTimeout = RELOAD_TIME
+
     def slash(self):
         self.slashTimeout = 200
         self.image = self.rot_center(Hero.images['knife'], -90+self.theta)

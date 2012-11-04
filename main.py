@@ -346,6 +346,11 @@ while True:
 
     if gameStarted:
         active.update(dT)
+        hurters = pygame.sprite.spritecollide(hero, enemies, False)
+        for spr in hurters:
+            if spr.attackTimeout <= 0:
+                hero.damage(spr.power)
+                spr.attackTimeout = 1000
         if hero.alive:
             if keys[K_w]:
                 hero.truePos[1] += -hero.speed*dT/1000
