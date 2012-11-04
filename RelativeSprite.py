@@ -2,12 +2,14 @@ import pygame
 from helpers import *
 
 class RelativeSprite(pygame.sprite.Sprite):
-    def __init__(self, camera=None):
+    def __init__(self, camera=None, offset=None):
         pygame.sprite.Sprite.__init__(self)
         if hasattr(self, 'image'):
             self.rect = self.image.get_rect()
-        if not camera:
-            raise Exception
+
+        self.offset = offset
+        if not offset:
+            self.offset = (0,0)
         self.camera = camera
         self.rect = Rect(-100000,-1000000,1,1)
         self.truePos = self.rect.topleft
@@ -17,9 +19,9 @@ class RelativeSprite(pygame.sprite.Sprite):
         self.update()
 
     def update(self, dT):
-        if self.rect:
-            self.rect.x = self.truePos[0] - self.camera.truePos[0]
-            self.rect.y = self.truePos[1] - self.camera.truePos[1]
+        if self.rect and self.camera:
+            self.rect.x = self.truePos[0] - self.camera.truePos[0] + self.offset[0]
+            self.rect.y = self.truePos[1] - self.camera.truePos[1] + self.offset[1]
 
     def setTruePos(self, pos):
         self.rect.center = pos
@@ -27,3 +29,6 @@ class RelativeSprite(pygame.sprite.Sprite):
 
     def setCamera(self, cam):
         self.camera = cam
+
+    def setOffset(self, off):
+        self.offset = off
