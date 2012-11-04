@@ -19,11 +19,11 @@ class cat(RelativeSprite):
     images = {}
     maxHealth = 50
     attackTimeout = 1000
-    power = 10
+    power = 20
     def __init__(self, x, y):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
-        self.health = ethunterone.maxHealth
+        self.health = cat.maxHealth
         self.aware = Config['PIXELS_PER_TILE']*3
         #self.id = id
         self.speed = 9
@@ -54,7 +54,7 @@ class cat(RelativeSprite):
         self.image = cat.images['dead']
         pos = self.target.rect.center
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-        self.image = rot_center(self.image, -90-targetDir)
+        self.image = rot_center(self.image, -270-targetDir)
     def update(self, dT):
         RelativeSprite.update(self, dT)
         #change image

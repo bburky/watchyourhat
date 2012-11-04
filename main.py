@@ -403,9 +403,10 @@ def generateTiles(block):
             spr.target = hero
             gpEnem.add(spr)
 
-            hb = HealthBar(target=spr)
-            actors.add(hb)
-            active.add(hb)
+            if not isinstance(spr, cat):
+                hb = HealthBar(target=spr)
+                actors.add(hb)
+                active.add(hb)
             
             enemies_list_lock.acquire()
             enemies_list[enemies_n] = spr
@@ -452,7 +453,7 @@ def unloadBlock(b):
 
 
 def addGunshot(pt1, pt2):
-    lines.add((0,0,0), pt1, pt2)
+    lines.add(((0,0,0), pt1, pt2))
 def passable((x, y)):
     block = whichBlock((x, y))
     tiles = middle[block]
@@ -516,7 +517,7 @@ def slash():
         collisions = pygame.sprite.spritecollide(collisionSprite, enemies, False)
         collisions += pygame.sprite.spritecollide(collisionSprite, allies, False)
         for c in collisions:
-            c.damage(30)
+            c.damage(50)
             if isinstance(c, Ally):
                 multiplayer.s.send('6 %d %d;' % (c.n, 30))
             else:
@@ -564,9 +565,13 @@ while True:
 
     if gameStarted:
         active.update(dT)
+        collidingGems = pygame.sprite.spritecollide(hero, items, False)
+        for c in collidingGems:
+            c.kill()
+            moneyText.string = str(int(moneyText.string) + 1)
         hurters = pygame.sprite.spritecollide(hero, enemies, False)
         for spr in hurters:
-            if spr.attackTimeout <= 0:
+            if spr.attackTimeout <= 0 and spr.alive:
                 hero.damage(spr.power)
                 spr.attackTimeout = 1000
         if hero.alive:
