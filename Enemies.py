@@ -4,6 +4,7 @@ from helpers import *
 import math
 import random
 from RelativeSprite import RelativeSprite
+from Music import Music
 def rot_center(image, angle):
     """rotate an image while keeping its center and size"""
     orig_rect = image.get_rect()
@@ -23,6 +24,7 @@ class ethunterone(RelativeSprite):
         self.aware = Config['PIXELS_PER_TILE']*20
         #self.id = id
         self.speed = 3
+        self.musica = Music()
         if not ethunterone.images:
             ss = Spritesheet('tiles-bottom.png')
             ethunterone.images['idle'] = []
@@ -41,6 +43,7 @@ class ethunterone(RelativeSprite):
         #leave to sterling
     def damage(self, dmg):
         self.health = self.health-dmg
+        self.musica.enemydamaged()
         if self.health <= 0:
             self.die()
     def die(self):

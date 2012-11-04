@@ -3,12 +3,14 @@ import math
 from RelativeSprite import RelativeSprite
 from Config import Config
 from helpers import *
+from Music import Music
 
 class Hero(pygame.sprite.Sprite):
     images = {}
     speed = 200.0
     maxHealth = 100
     def __init__(self):
+        
         pygame.sprite.Sprite.__init__(self)
         if not Hero.images:
             ssFoo = Spritesheet('tiles-bottom.png')
@@ -20,6 +22,7 @@ class Hero(pygame.sprite.Sprite):
         self.speed = Hero.speed
         self.theta = 0.0
         self.truePos = list(self.rect.center)
+        self.musica = Music()
 
         self.health = Hero.maxHealth
 
@@ -36,7 +39,8 @@ class Hero(pygame.sprite.Sprite):
         return rot_image
 
     def shoot(self):
-        self.shootTimeout = 200
+        self.musica.pistolshot()
+        self.shootTimeout = 500
         self.image = self.rot_center(Hero.images['shooting'], -90+self.theta)
 
     def slash(self):
@@ -55,6 +59,7 @@ class Hero(pygame.sprite.Sprite):
         self.theta = -targetDir
 
     def damage(self, amount):
+        self.musica.damaged()
         self.health -= amount
 
     def update(self, dT):
