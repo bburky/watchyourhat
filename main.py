@@ -67,9 +67,17 @@ gem.rect = gem.image.get_rect()
 gem.rect.topleft = (0, SCREEN_HEIGHT-45*2)
 gui.add(gem)
 
+moneyText = Text("12345")
+moneyText.color = (255, 0, 0)
+moneyText.bgColor = (0,0,0,0)
+moneyText.rect.topleft = Vec2d(gem.rect.topright) + Vec2d(5, 18)
+moneyText.createImage()
+gui.add(moneyText)
+
 bullets = pygame.sprite.Sprite()
 bullets.image = ssBottom.image_at(Rect(8*45, 6*45, 3*45, 45))
 bullets.rect = bullets.image.get_rect()
+bullets.rect.right -= 100
 bullets.rect.topleft = (0, SCREEN_HEIGHT-45)
 gui.add(bullets)
 
@@ -255,7 +263,7 @@ def shoot():
 
 def slash():
     hero.slash()
-    collisions = pygame.sprite.spritecollide(hero, enemies)
+    collisions = pygame.sprite.spritecollide(hero, enemies, False)
     for c in collisions:
         c.damage(10)
 

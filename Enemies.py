@@ -115,6 +115,7 @@ class ethunterone(RelativeSprite):
         self.truePos = [x, y]
         self.range = 50
         self.target = None
+        self.theta = 0
         
     def damage(self, dmg):
         self.health = self.health-dmg
@@ -145,6 +146,7 @@ class ethunterone(RelativeSprite):
             pos = self.target.rect.center
             targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
             self.image = rot_center(self.image, -90-targetDir)
+            self.theta = -targetDir
 
         #animate
         if self.alive and self.target:
