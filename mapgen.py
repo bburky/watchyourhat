@@ -73,10 +73,9 @@ tiles[215] = [(7, 2), -1]
 tiles[216] = [(8, 2), -1]
 tiles[217] = [(9, 2), -1]
 
-
-border_map = {}
 def add_borders(x, y, mp, c=set([])):
     if (y, x) in c: return
+    if mp[y][x] < 200: return
     c.add((y,x))
     
     i = {}
@@ -92,7 +91,7 @@ def add_borders(x, y, mp, c=set([])):
     if all(i[j] for j in range(7)) and not i[7]:
         mp[y][x] = 201
     elif not i[6] and i[3] and i[4]:
-        mp[y][x] = 202
+        mp[y][x] = 216
     elif all(i[j] for j in range(8) if j != 5) and not i[5]:
         mp[y][x] = 203
     elif all(i[j] for j in range(8) if j != 0) and not i[0]:
@@ -100,18 +99,18 @@ def add_borders(x, y, mp, c=set([])):
     elif all(i[j] for j in range(8) if j != 2) and not i[2]:
         mp[y][x] = 206
     elif not i[4] and i[1] and i[6]:
-        mp[y][x] = 204
+        mp[y][x] = 213
     elif not i[3] and i[1] and i[6]:
         mp[y][x] = 205
     elif not i[1] and i[3] and i[4]:
-        mp[y][x] = 207
-    elif all(not i[j] for j in range(8) if j != 7) and i[7]:
+        mp[y][x] = 211
+    elif all(not i[j] for j in range(8) if j not in [4, 6, 7]) and i[4] and i[6] and i[7]:
         mp[y][x] = 210
-    elif all(not i[j] for j in range(8) if j != 5) and i[5]:
+    elif all(not i[j] for j in range(8) if j not in [3, 5, 6]) and i[3] and i[5] and i[6]:
         mp[y][x] = 212
-    elif all(not i[j] for j in range(8) if j != 2) and i[2]:
+    elif all(not i[j] for j in range(8) if j not in [1, 2, 4]) and i[1] and i[2] and i[4]:
         mp[y][x] = 215
-    elif all(not i[j] for j in range(8) if j != 0) and i[0]:
+    elif all(not i[j] for j in range(8) if j not in [0, 1, 3]) and i[0] and i[1] and i[3]:
         mp[y][x] = 217
     
     for dx, dy in [(0, 1), (0, -1), (-1, 0), (1, 0)]:
@@ -120,7 +119,7 @@ def add_borders(x, y, mp, c=set([])):
 def spawn_room(x, y, max_x, max_y, mp, en, it, blocked, p=1):
     sz = 5
     if x < 1 or y < 1: return
-    if x > max_x - sz + 1 or y > max_y - sz + 1: return
+    if x > max_x - sz or y > max_y - sz: return
     if (y, x) in blocked: return
     
     
@@ -147,6 +146,9 @@ def spawn_room(x, y, max_x, max_y, mp, en, it, blocked, p=1):
     for dx, dy in [(0, -sz), (0, sz), (sz, 0), (-sz, 0)]:
         if random.random() > p: continue
         spawn_room(x+dx, y+dy, max_x, max_y, mp, en, it, blocked, p*.4)
+    
+    if p == 1:
+        add_borders(x+1, y+1, mp)
 
 def gen_block(seed):
     sz_x = sz_y = Config['TILES_PER_BLOCK']
@@ -305,20 +307,20 @@ def gen_block(seed):
     #print en
     return bg, fg, en, it
 if __name__ == "__main__":
-	m = gen_block(712)
-	m = gen_block(713)
-	m = gen_block(714)
-	m = gen_block(715)
-	m = gen_block(716)
-	m = gen_block(718)
-	m = gen_block(719)
-	m = gen_block(720)
-	m = gen_block(721)
-	m = gen_block(721)
-	m = gen_block(723)
-	m = gen_block(725)
-	m = gen_block(724)
-	m = gen_block(726)
-	m = gen_block(727)
-	m = gen_block(728)
+    m = gen_block(712)
+    m = gen_block(713)
+    m = gen_block(714)
+    m = gen_block(715)
+    m = gen_block(716)
+    m = gen_block(718)
+    m = gen_block(719)
+    m = gen_block(720)
+    m = gen_block(721)
+    m = gen_block(721)
+    m = gen_block(723)
+    m = gen_block(725)
+    m = gen_block(724)
+    m = gen_block(726)
+    m = gen_block(727)
+    m = gen_block(728)
 
