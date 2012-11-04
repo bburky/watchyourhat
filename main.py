@@ -174,7 +174,7 @@ buttons = defaultdict(lambda: False)
 
 pygame.init()
 musica = Music()
-musica.junglestart()
+##musica.junglestart()
 flags = pygame.DOUBLEBUF|pygame.SRCALPHA|pygame.HWACCEL
 if "--fullscreen" in sys.argv:
     flags |= pygame.FULLSCREEN
