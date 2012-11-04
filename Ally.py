@@ -10,16 +10,16 @@ class Ally(RelativeSprite):
     maxHealth = 100
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
-        if not Hero.images:
+        if not Ally.images:
             ssFoo = Spritesheet('tiles-bottom.png')
-            Hero.images['idle'] = ssFoo.image_at(Rect(0*45, 4*45, 45, 45))
-            Hero.images['shooting'] = ssFoo.image_at(Rect(0*45, 6*45, 45, 45))
-        self.image = Hero.images['idle']
+            Ally.images['idle'] = ssFoo.image_at(Rect(0*45, 4*45, 45, 45))
+            Ally.images['shooting'] = ssFoo.image_at(Rect(0*45, 6*45, 45, 45))
+        self.image = Ally.images['idle']
         self.rect = self.image.get_rect()
-        self.speed = Hero.speed
+        self.speed = Ally.speed
         self.theta = 0.0
 
-        self.health = Hero.maxHealth
+        self.health = Ally.maxHealth
 
         self.shootTimeout = -1
     
@@ -34,11 +34,11 @@ class Ally(RelativeSprite):
 
     def shoot(self):
         self.shootTimeout = 200
-        self.image = self.rot_center(Hero.images['shooting'], -90+self.theta)
+        self.image = self.rot_center(Ally.images['shooting'], -90+self.theta)
 
     def setTheta(self, theta):
         self.theta = theta
-        self.image = self.rot_center(Hero.images[imageString], -90-theta)
+        self.image = self.rot_center(Ally.images[imageString], -90-theta)
 
     def face(self, pos):
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
@@ -46,7 +46,7 @@ class Ally(RelativeSprite):
             imageString = 'shooting'
         else:
             imageString = 'idle'
-        self.image = self.rot_center(Hero.images[imageString], -90-targetDir)
+        self.image = self.rot_center(Ally.images[imageString], -90-targetDir)
         self.theta = -targetDir
 
     def damage(self, amount):
