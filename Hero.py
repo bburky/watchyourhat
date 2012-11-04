@@ -6,11 +6,12 @@ from helpers import *
 
 class Hero(pygame.sprite.Sprite):
     images = {}
-    speed = 1000.0
+    speed = 500.0
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         if not Hero.images:
-            Hero.images['idle'] = load_image('hero.png', (20,20))
+            ssFoo = Spritesheet('tiles-bottom.png')
+            Hero.images['idle'] = ssFoo.image_at(Rect(0*45, 4*45, 45, 45))
         self.image = Hero.images['idle']
         self.rect = self.image.get_rect()
         self.speed = Hero.speed
