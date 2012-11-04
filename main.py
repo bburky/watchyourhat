@@ -79,6 +79,7 @@ def manage_network():
             if m_t == 0:
                 my_id = int(m[1])
                 allies2[my_id] = hero
+                hero.n = my_id
             elif m_t == 1:
                 if len(multiplayer.msg_buff) > 500: continue
                 i = int(m[1])
