@@ -6,6 +6,7 @@ import random
 from collections import defaultdict
 from helpers import *
 import mapgen
+from Ally import Ally
 from Config import Config
 from Hero import Hero
 from Enemies import *
@@ -53,7 +54,6 @@ hero.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 hb = HealthBar(target=hero)
 active.add(hb)
 actors.add(hb)
-
 
 fps = Text("")
 fps.rect.topleft = (0,0)
@@ -255,8 +255,9 @@ def callHeli():
 
 def addAlly():
     a = Ally()
+    a.truePos = [hero.truePos[0], hero.truePos[1]]
     a.setCamera(hero)
-    a.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.y))
+    a.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.h))
     actors.add(a)
     active.add(a)
 
@@ -264,6 +265,10 @@ def addAlly():
     actors.add(hb)
     active.add(hb)
     return a
+
+ally = addAlly()
+ally.truePos = [30, 30]
+ally.update(0)
 
 lastEnemyCreation = 0
 lastBlockLoad = 0

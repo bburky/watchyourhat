@@ -19,7 +19,7 @@ class RelativeSprite(pygame.sprite.Sprite):
         self.update()
 
     def update(self, dT):
-        if self.rect and self.camera:
+        if self.rect and self.camera and self.offset:
             self.rect.x = self.truePos[0] - self.camera.truePos[0] + self.offset[0]
             self.rect.y = self.truePos[1] - self.camera.truePos[1] + self.offset[1]
 

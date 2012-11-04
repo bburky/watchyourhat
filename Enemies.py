@@ -23,7 +23,7 @@ class ethunterone(RelativeSprite):
         self.health = ethunterone.maxHealth
         self.aware = Config['PIXELS_PER_TILE']*20
         #self.id = id
-        self.speed = 3
+        self.speed = 3.0/100
         self.musica = Music()
         if not ethunterone.images:
             ss = Spritesheet('tiles-bottom.png')
@@ -73,7 +73,7 @@ class ethunterone(RelativeSprite):
         if self.alive and self.target:
             vel = Vec2d(self.target.truePos) - Vec2d(self.truePos)
             if vel.length < self.aware:
-                vel.length = self.speed
+                vel.length = self.speed*dT
                 self.truePos += vel
         else:
             if hasattr(self, 'deathTime') and self.deathTime < pygame.time.get_ticks() - 1000:
