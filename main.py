@@ -8,6 +8,7 @@ from helpers import *
 import mapgen
 from Config import Config
 from Hero import Hero
+from Enemies import *
 from RelativeSprite import RelativeSprite
 import time
 
@@ -25,9 +26,11 @@ random.seed(time.time())
 seeds = {}
 lower = defaultdict(pygame.sprite.RenderUpdates)
 middle = defaultdict(pygame.sprite.RenderUpdates)
+enemies = pygame.sprite.RenderUpdates()
 actors = pygame.sprite.RenderUpdates()
 upper = defaultdict(pygame.sprite.RenderUpdates)
 active = pygame.sprite.Group()
+lines = set()
 loadedBlocks = set()
 
 #sprite sheets
@@ -54,6 +57,23 @@ def handleEvents(events):
         if e.type == QUIT:
             pygame.quit()
             sys.exit(0)
+        if e.type == MOUSEBUTTONDOWN:
+            start = hero.rect.center
+            delta = Vec2d(1000, 0)
+            delta.rotate(-hero.theta)
+            end = Vec2d(start) + delta
+            lines.add(((0,0,0), start, end))
+            for e in enemies:
+                offsets = []
+                offsets.append(Vec2d(e.rect.topleft) - Vec2d(hero.rect.center))
+                offsets.append(Vec2d(e.rect.topright) - Vec2d(hero.rect.center))
+                offsets.append(Vec2d(e.rect.bottomleft) - Vec2d(hero.rect.center))
+                offsets.append(Vec2d(e.rect.bottomright) - Vec2d(hero.rect.center))
+                crosses = [o.cross(delta) for o in offsets]
+                if any(c >= 0 for c in crosses) and any(c <= 0 for c in crosses):
+                    dAngle = (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle
+                    if -10 < delta.angle - (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle < 10:
+                        e.damage(10)
 
 def whichBlock(pos):
     # calculates the block that the position is part of
@@ -82,6 +102,9 @@ def refreshScreen():
     for l in lower:
         lower[l].draw(screen)
     actors.draw(screen)
+    for l in lines:
+        pygame.draw.line(screen, *l)
+    lines.clear()
     for u in upper:
         upper[u].draw(screen)
     pygame.display.update(changes)
@@ -101,7 +124,7 @@ def generateTiles(block):
         wid = hei = Config['PIXELS_PER_TILE']
         rec = Rect((x*wid, y*hei), (wid, hei))
         img = ssBottom.image_at(rec)
-        spr = RelativeSprite(camera=hero)
+        spr = RelativeSprite(camera=hero, offset=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
         spr.image = img
         spr.rect = img.get_rect()
         spr.truePos = [block[0]*Config['PIXELS_PER_BLOCK'] + b[0]*45, block[1]*Config['PIXELS_PER_BLOCK'] + b[1]*45]
@@ -112,10 +135,10 @@ def generateTiles(block):
         x, y = mapgen.tiles[fg[f]][0]
         wid = hei = Config['PIXELS_PER_TILE']
         rec = Rect((x*wid, y*hei), (wid, hei))
-        if fg[f] == 1:
+        if fg[f] in [1, 10]:
             rec = Rect((x*wid-1, y*hei-0), (wid, hei)) #0, 0 gives transparent image wtf
         img = ssTop.image_at(rec)
-        spr = RelativeSprite(camera=hero)
+        spr = RelativeSprite(camera=hero, offset=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
         spr.image = img
         spr.rect = img.get_rect()
         spr.truePos = [block[0]*Config['PIXELS_PER_BLOCK']+f[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+f[1]*45]
@@ -127,7 +150,7 @@ def generateTiles(block):
         wid = hei = Config['PIXELS_PER_TILE']
         rec = Rect((x*wid, y*hei), (wid, hei))
         img = ssTop.image_at(rec)
-        spr = RelativeSprite(camera=hero)
+        spr = RelativeSprite(camera=hero, offset=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
         spr.image = img
         spr.rect = img.get_rect()
         spr.truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
@@ -146,9 +169,22 @@ def unloadBlock(b):
         s.kill()
     del lower[b], upper[b]
 
+def createEnemies():
+    pos = hero.truePos
+    tPos = [pos[0]+100, pos[1]+100]
+    en = ethunterone(*tPos)
+    en.setCamera(hero)
+    en.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+    enemies.add(en)
+    actors.add(en)
+    active.add(en)
+    en.attack(hero)
+
+createEnemies()
+
+lastBlockLoad = 0
 while True:
     dT = clock.tick(60)
-    print 1000.0/dT
     handleEvents(pygame.event.get())
     active.update(dT)
     if keys[K_w]:
@@ -161,7 +197,7 @@ while True:
         hero.truePos[0] += hero.speed*dT/1000
 
     shouldBeVisible = visibleBlocks(hero.truePos)
-    if shouldBeVisible != loadedBlocks:
+    if shouldBeVisible != loadedBlocks and (not lastBlockLoad or lastBlockLoad < pygame.time.get_ticks() - 2000):
         toLoad = shouldBeVisible - loadedBlocks
         toUnload = loadedBlocks - shouldBeVisible
         print "Loading", toLoad
@@ -171,5 +207,6 @@ while True:
         for b in toUnload:
             unloadBlock(b)
         loadedBlocks = shouldBeVisible
+        lastBlockLoad = pygame.time.get_ticks()
     hero.face(pygame.mouse.get_pos())
     refreshScreen()

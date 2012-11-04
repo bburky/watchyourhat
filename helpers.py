@@ -1,5 +1,6 @@
 import os, sys
 import pygame
+import math
 from pygame.locals import *
 
 imageCache = {}

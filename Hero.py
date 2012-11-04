@@ -33,3 +33,4 @@ class Hero(pygame.sprite.Sprite):
     def face(self, pos):
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
         self.image = self.rot_center(Hero.images['idle'], -90-targetDir)
+        self.theta = -targetDir
