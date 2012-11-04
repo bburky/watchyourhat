@@ -22,6 +22,9 @@ tiles[7] = [(1, 2), 1]
 tiles[8] = [(2, 2), 1]
 tiles[9] = [(3, 2), 1]
 
+# Bush Foilage
+tiles[10] = [(1, 3), 0]
+
 # Helicopter Top Left
 tiles[100] = [(5, 1), -1]
 
@@ -55,12 +58,12 @@ def spawn_room(x, y, max_x, max_y, mp, en, blocked, p=1):
     sz = 5
     if x < 1 or y < 1: return
     if x > max_x - sz + 1 or y > max_y - sz + 1: return
-    if (x, y) in blocked: return
-    blocked.add((x, y))
+    if (y, x) in blocked: return
     
     for i in xrange(x, x + sz):
         for j in xrange(y, y + sz):
             mp[i][j] = 200
+            blocked.add((j, i))
     
     en_c = 0
     while en_c < 3:
@@ -77,7 +80,8 @@ def spawn_room(x, y, max_x, max_y, mp, en, blocked, p=1):
 
 def gen_block(seed):
     sz_x = sz_y = Config['TILES_PER_BLOCK']
-    tr_dens = 10
+    tr_dens = 0
+    bush_dens = 0
     random.seed(seed)
     
     mp = [[0] * sz_x for i in xrange(sz_y)]
@@ -91,9 +95,13 @@ def gen_block(seed):
     #print "-"*8
     #print mp_type
     #print "-"*8
-    
-    if mp_type == 1:
+    if mp_type == 0:
+        tr_dens = 15
+        bush_dens = 20
+    elif mp_type == 1:
         # Generate Clearing
+        tr_dens = 12
+        bush_dens = 10
         x = random.randrange(5, (sz_x - 8))
         y = random.randrange(5, (sz_y - 8))
         
@@ -162,9 +170,9 @@ def gen_block(seed):
             mp[j][i] = 103
     
     elif mp_type == 2:
-        tr_dens = 2
-        x = random.randrange(1, sz_x-10-2)
-        y = random.randrange(1, sz_y-10-2)
+        tr_dens = 4
+        x = random.randrange(1, sz_x-5-2)
+        y = random.randrange(1, sz_y-5-2)
         
         spawn_room(x, y, sz_x-1, sz_y-1, mp, en, blocked)
     
@@ -176,9 +184,11 @@ def gen_block(seed):
         if (y, x) in blocked: continue
         
         trees.add((y, x))
-        blocked.add((y, x))
-    
-    for tr in trees:
+        for j in xrange(y - 1, y + 2):
+            for i in xrange(x - 1, x + 2):
+                blocked.add((j, i))
+        tr = (j, i)
+        
         mp[tr[0]][tr[1]] = 1
         fg[(tr[1], tr[0])] = 1
         fg[(tr[1] - 1, tr[0] - 1)] = 2
@@ -189,6 +199,17 @@ def gen_block(seed):
         fg[(tr[1] - 1, tr[0] + 1)] = 7
         fg[(tr[1], tr[0] + 1)] = 8
         fg[(tr[1] + 1, tr[0] + 1)] = 9
+    
+    #Generate Bushes
+    bush_c = 0
+    while bush_c < bush_dens:
+        x = random.randrange(0, sz_x)
+        y = random.randrange(0, sz_y)
+        if (y, x) in blocked: continue
+        
+        bush_c += 1
+        mp[y][x] = 10
+        blocked.add((y, x))
     
     for j in xrange(sz_y):
         for i in xrange(sz_x):
