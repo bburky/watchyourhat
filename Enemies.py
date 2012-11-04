@@ -54,7 +54,7 @@ class cat(RelativeSprite):
         self.image = cat.images['dead']
         pos = self.target.rect.center
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-        self.image = rot_center(self.image, -90-targetDir)
+        self.image = rot_center(self.image, -270-targetDir)
     def update(self, dT):
         RelativeSprite.update(self, dT)
         #change image
