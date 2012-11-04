@@ -485,8 +485,11 @@ def shoot():
 def slash():
     if hero.alive:
         hero.slash()
-        collisions = pygame.sprite.spritecollide(hero, enemies, False)
-        collisions += pygame.sprite.spritecollide(hero, allies, False)
+        collisionSprite = pygame.sprite.Sprite()
+        collisionSprite.rect = hero.rect.inflate(20, 20)
+        collisionSprite.rect.center = hero.rect.center
+        collisions = pygame.sprite.spritecollide(collisionSprite, enemies, False)
+        collisions += pygame.sprite.spritecollide(collisionSprite, allies, False)
         for c in collisions:
             c.damage(30)
             if isinstance(c, Ally):

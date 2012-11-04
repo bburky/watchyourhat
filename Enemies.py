@@ -24,7 +24,7 @@ class cat(RelativeSprite):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
         self.health = ethunterone.maxHealth
-        self.aware = Config['PIXELS_PER_TILE']*20
+        self.aware = Config['PIXELS_PER_TILE']*3
         #self.id = id
         self.speed = 9
         self.musica = Music()
@@ -44,6 +44,7 @@ class cat(RelativeSprite):
     def damage(self, dmg):
         self.health = self.health-dmg
         self.musica.catdmg()
+        self.aware = 3000
         if self.health <= 0:
             self.die()
     def die(self):
@@ -106,7 +107,7 @@ class ethunterone(RelativeSprite):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
         self.health = ethunterone.maxHealth
-        self.aware = Config['PIXELS_PER_TILE']*20
+        self.aware = Config['PIXELS_PER_TILE']*8
         #self.id = id
         self.speed = 3
         self.musica = Music()
@@ -131,6 +132,7 @@ class ethunterone(RelativeSprite):
     def damage(self, dmg):
         self.health = self.health-dmg
         self.musica.enemydamaged()
+        self.aware = 3000
         if self.health <= 0:
             self.die()
     
