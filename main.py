@@ -274,11 +274,12 @@ def handleEvents(events):
             if e.key == K_ESCAPE:
                 pygame.quit()
         if e.type == KEYDOWN and e.key == K_e:
-            for i in items:
-                if i.rect.colliderect(hero.rect):
-                    i.pickup()
-                    i.kill()
-                    moneyText = str(int(moneyText.string) + i.worth())
+            pass
+            #for i in items:
+            #    if i.rect.colliderect(hero.rect):
+            #        i.pickup()
+            #        i.kill()
+            #        moneyText = str(int(moneyText.string) + i.worth())
         elif e.type == KEYDOWN and e.key == K_r:
             hero.reload()
             musica.pistolreload()
@@ -319,6 +320,13 @@ def visibleBlocks(pos):
 
 def refreshScreen():
     block_lock.acquire()
+
+    if hero.reloadTimeout >= 0:
+        bulletsText.setText("Reloading...")
+    else:
+        bulletsText.setText(str(hero.ammo))
+    print hero.ammo
+
     screen.fill(Config['BG_COLOR'])
     changes = []
     vis = visibleBlocks(hero.truePos)
@@ -436,10 +444,12 @@ def shoot():
     global remainingBullets
     if not hero.alive:
         return
-    bulletsText.text = str(hero.ammo)
-    print hero.ammo
-    bulletsText.createImage()
     
+    if hero.ammo <= 0:
+        hero.reload()
+        return
+    else:
+        hero.shoot()
     start = hero.rect.center
     delta = Vec2d(1000, 0)
     delta.rotate(-hero.theta)
