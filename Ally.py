@@ -9,11 +9,12 @@ class Ally(RelativeSprite):
     speed = 200.0
     maxHealth = 100
     def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
+        RelativeSprite.__init__(self)
         if not Ally.images:
             ssFoo = Spritesheet('tiles-bottom.png')
             Ally.images['idle'] = ssFoo.image_at(Rect(0*45, 4*45, 45, 45))
             Ally.images['shooting'] = ssFoo.image_at(Rect(0*45, 6*45, 45, 45))
+            Ally.images['knife'] = ssFoo.image_at(Rect(7*45, 6*45, 45, 45))
         self.image = Ally.images['idle']
         self.rect = self.image.get_rect()
         self.speed = Ally.speed
@@ -39,25 +40,13 @@ class Ally(RelativeSprite):
 
     def slash(self):
         self.slashTimeout = 200
-        self.image = self.rot_center(Hero.images['knife'], -90+self.theta)
-
-    def setTheta(self, theta):
-        self.theta = theta
-        self.image = self.rot_center(Ally.images[imageString], -90-theta)
-
-    def face(self, pos):
-        targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-        if self.shootTimeout > 0:
-            imageString = 'shooting'
-        else:
-            imageString = 'idle'
-        self.image = self.rot_center(Ally.images[imageString], -90-targetDir)
-        self.theta = -targetDir
+        self.image = self.rot_center(Ally.images['knife'], -90+self.theta)
 
     def damage(self, amount):
         self.health -= amount
 
     def update(self, dT):
+        print self.rect.topleft
         RelativeSprite.update(self, dT)
         if self.shootTimeout > 0:
             self.shootTimeout -= dT

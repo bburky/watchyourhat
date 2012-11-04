@@ -21,7 +21,7 @@ class Hero(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.speed = Hero.speed
         self.theta = 0.0
-        self.truePos = [30,30]
+        self.truePos = [0,0]
         self.musica = Music()
 
         self.health = Hero.maxHealth
