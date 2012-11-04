@@ -52,14 +52,14 @@ tiles[117] = [(6, 2), -1]
 tiles[200] = [(8, 1), -1]
 
 def spawn_room(x, y, max_x, max_y, mp, en, blocked, p=1):
-    sz = 10
+    sz = 5
     if x < 1 or y < 1: return
     if x > max_x - sz + 1 or y > max_y - sz + 1: return
     if (x, y) in blocked: return
     blocked.add((x, y))
     
-    for i in xrange(x, x + 10):
-        for j in xrange(y, y + 10):
+    for i in xrange(x, x + sz):
+        for j in xrange(y, y + sz):
             mp[i][j] = 200
     
     en_c = 0
@@ -71,9 +71,9 @@ def spawn_room(x, y, max_x, max_y, mp, en, blocked, p=1):
         en_c += 1
         en[(i, j)] = 1
     
-    for dx, dy in [(0, -10), (0, 10), (10, 0), (-10, 0)]:
+    for dx, dy in [(0, -sz), (0, sz), (sz, 0), (-sz, 0)]:
         if random.random() > p: continue
-        spawn_room(x+dx, y+dy, max_x, max_y, mp, en, blocked, p*.5)
+        spawn_room(x+dx, y+dy, max_x, max_y, mp, en, blocked, p*.8)
 
 def gen_block(seed):
     sz_x = sz_y = Config['TILES_PER_BLOCK']
