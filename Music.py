@@ -29,7 +29,7 @@ class Music:
     def pistolreload(self):
         self.pistolrel.play(0)
     def helicoptercontinue(self):
-        self.helicopter.play(-1)
+        self.helicopter.play(10)
     def damaged(self):
         self.hit.play(0)
     def gempick(self):
