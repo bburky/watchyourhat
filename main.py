@@ -39,6 +39,7 @@ def manage_network():
     my_id = -1
     if multiplayer.hosting:
         my_id = 0
+        hero.n = 0
         allies2[my_id] = hero
     
     enemy_update_time = time.time()
