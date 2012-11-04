@@ -56,13 +56,13 @@ def gen_block(seed):
     mp = [[0] * sz_x for i in xrange(sz_y)]
     blocked = set([])
     
-    mp_type = random.sample([0]*100 + [1]*100, 1)[0]
+    mp_type = random.sample([0]*100 + [1]*20 + [2]*10, 1)[0]
     bg = {}
     fg = {}
     en = {}
-    print "-"*8
-    print mp_type
-    print "-"*8
+    #print "-"*8
+    #print mp_type
+    #print "-"*8
     
     if mp_type == 1:
         # Generate Clearing
@@ -144,7 +144,7 @@ def gen_block(seed):
         blocked.add((y, x))
     
     for tr in trees:
-        mp[tr[0]][tr[0]] = 1
+        mp[tr[0]][tr[1]] = 1
         fg[(tr[1] - 1, tr[0] - 1)] = 2
         fg[(tr[1], tr[0] - 1)] = 3
         fg[(tr[1] + 1, tr[0] - 1)] = 4
@@ -168,7 +168,7 @@ def gen_block(seed):
         if (x, y) in en or (x, y) in blocked: continue
         
         en[(x,y)] = 1
-    print en
+    #print en
     return bg, fg, en
 
 m = gen_block(36731233)
