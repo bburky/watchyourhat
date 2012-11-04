@@ -18,6 +18,18 @@ class Hero(pygame.sprite.Sprite):
         self.theta = 0.0
         self.truePos = list(self.rect.center)
 
+        self.image = pygame.Surface((self.image.get_width()*2, self.image.get_height()*2))
+        self.image.blit(Hero.images['idle'], (self.image.get_width()/4, self.image.get_height()/4))
+    
+    def rot_center(self, image, angle):
+        """rotate an image while keeping its center and size"""
+        orig_rect = image.get_rect()
+        rot_image = pygame.transform.rotate(image, angle)
+        rot_rect = orig_rect.copy()
+        rot_rect.center = rot_image.get_rect().center
+        rot_image = rot_image.subsurface(rot_rect).copy()
+        return rot_image
+
     def face(self, pos):
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-        self.image = pygame.transform.rotate(Hero.images['idle'], -90-targetDir)
+        self.image = self.rot_center(Hero.images['idle'], -90-targetDir)

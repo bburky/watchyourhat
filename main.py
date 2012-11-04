@@ -77,6 +77,7 @@ def visibleBlocks(pos):
            ])
 
 def refreshScreen():
+    screen.fill(BG_COLOR)
     changes = []
     for l in lower:
         lower[l].draw(screen)
@@ -111,6 +112,8 @@ def generateTiles(block):
         x, y = mapgen.tiles[fg[f]][0]
         wid = hei = Config['PIXELS_PER_TILE']
         rec = Rect((x*wid, y*hei), (wid, hei))
+        if fg[f] == 1:
+            rec = Rect((x*wid-1, y*hei-0), (wid, hei)) #0, 0 gives transparent image wtf
         img = ssTop.image_at(rec)
         spr = RelativeSprite(camera=hero)
         spr.image = img
