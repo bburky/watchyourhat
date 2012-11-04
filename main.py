@@ -277,7 +277,6 @@ def handleEvents(events):
         if e.type == KEYDOWN and e.key == K_e:
             for i in items:
                 if i.rect.colliderect(hero.rect):
-                    i.pickup()
                     i.kill()
                     moneyText = str(int(moneyText.string) + i.worth())
                     break
@@ -412,16 +411,16 @@ def generateTiles(block):
             enemies_list_lock.release()
 
     for i in it:
-        print i
+        print i, it[i]
         (x, y) = (3, 3)
         wid = hei = Config['PIXELS_PER_TILE']
         rec = Rect((x*wid, y*hei), (wid, hei))
-        img = ssTop.image_at(rec)
+        print rec
+        img = ssBottom.image_at(rec)
         truePos = [block[0]*Config['PIXELS_PER_BLOCK']+i[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+i[1]*45]
 
         spr = Gem()
         spr.truePos = truePos
-        spr.truePos = hero.truePos
         spr.setCamera(hero)
         spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
         spr.update(0)
@@ -500,7 +499,7 @@ def shoot():
             lines.add(((0,0,0), start, end))
     else:
         lines.add(((0,0,0), start, end))
-        
+
     if hero.ammo <= 0:
         hero.reload()
 
