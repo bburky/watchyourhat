@@ -108,6 +108,12 @@ def handleEvents(events):
             keys[e.key] = True
             if e.key == K_ESCAPE:
                 pygame.quit()
+        if e.type == KEYDOWN and e.key == K_e:
+            for i in items:
+                if i.rect.colliderect(hero.rect):
+                    i.pickup()
+                    i.kill()
+                    moneyText = str(int(moneyText.string) + i.worth())
         elif e.type == KEYUP:
             keys[e.key] = False
         if e.type == QUIT:
@@ -276,8 +282,9 @@ def shoot():
 def slash():
     hero.slash()
     collisions = pygame.sprite.spritecollide(hero, enemies, False)
+    collisions += pygame.sprite.spritecollide(hero, allies, False)
     for c in collisions:
-        c.damage(10)
+        c.damage(30)
 
 def callHeli():
     print "geduda choppa"
