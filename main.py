@@ -36,8 +36,8 @@ middle = defaultdict(pygame.sprite.RenderUpdates)
 enemies = pygame.sprite.RenderUpdates()
 actors = pygame.sprite.RenderUpdates()
 upper = defaultdict(pygame.sprite.RenderUpdates)
-gui = pygame.sprite.Group()
-active = pygame.sprite.Group()
+gui = pygame.sprite.RenderUpdates()
+active = pygame.sprite.RenderUpdates()
 lines = set()
 loadedBlocks = set()
 
@@ -87,9 +87,9 @@ def handleEvents(events):
         if e.type == MOUSEBUTTONUP:
             buttons[e.button] = False
 
-        elif e.type == MOUSEBUTTONDOWN and e.button == 3:
-            #hero.knife()
-            pass
+        if e.type == MOUSEBUTTONDOWN and e.button == 3:
+            print "slash"
+            hero.slash()
 
 def whichBlock(pos):
     # calculates the block that the position is part of
@@ -115,22 +115,24 @@ def visibleBlocks(pos):
 def refreshScreen():
     screen.fill(BG_COLOR)
     changes = []
+    vis = visibleBlocks(hero.truePos)
     for l in lower:
-        lower[l].draw(screen)
+        if l in vis:
+            lower[l].draw(screen)
     actors.draw(screen)
     for l in lines:
         pygame.draw.line(screen, *l)
     lines.clear()
     for u in upper:
-        upper[u].draw(screen)
+        if u in vis:
+            upper[u].draw(screen)
     gui.draw(screen)
-    pygame.display.update(changes)
     pygame.display.flip()
 
 def generateTiles(block):
-    gpBack = pygame.sprite.Group()
-    gpFore = pygame.sprite.Group()
-    gpEnem = pygame.sprite.Group()
+    gpBack = pygame.sprite.RenderUpdates()
+    gpFore = pygame.sprite.RenderUpdates()
+    gpEnem = pygame.sprite.RenderUpdates()
 
     prevGenerated = True
     if block not in seeds:
@@ -236,6 +238,9 @@ def shoot():
     else:
         lines.add(((0,0,0), start, end))
 
+def slash():
+    hero.slash()
+
 def callHeli():
     print "geduda choppa"
     h = Helicopter()
@@ -247,7 +252,7 @@ def callHeli():
     active.add(h)
     actors.add(h)
 
-def addAlly(a):
+def addAlly():
     a = Ally()
     a.setCamera(hero)
     a.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.y))

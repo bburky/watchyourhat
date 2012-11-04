@@ -19,6 +19,7 @@ class HealthBar(pygame.sprite.Sprite):
         else:
             self.prevPercent = perc
             if perc not in cache:
+                print "hb cache miss"
                 x = 0
                 y = 0
                 wid = self.target.rect.width
