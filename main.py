@@ -15,7 +15,6 @@ from Text import Text
 from HealthBar import HealthBar
 import time
 
-BG_COLOR = 23, 82, 8 #green
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
@@ -113,7 +112,7 @@ def visibleBlocks(pos):
            ])
 
 def refreshScreen():
-    screen.fill(BG_COLOR)
+    screen.fill(Config['BG_COLOR'])
     changes = []
     for l in lower:
         lower[l].draw(screen)
