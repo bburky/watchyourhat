@@ -15,6 +15,7 @@ class Helicopter(RelativeSprite):
         RelativeSprite.__init__(self)
         if not Helicopter.frames:
             ssHeli = Spritesheet('tiles-bottom.png')
+            #Helicopter.frames = [ssHeli.image_at(Rect(0, 4*45, 45, 45))]
             Helicopter.frames = [ssHeli.image_at(Rect(((10 + 3*i)*45, 0), (45*3, 45*3))) for i in xrange(6)]
 
         self.speed = 3
@@ -41,7 +42,7 @@ class Helicopter(RelativeSprite):
             self.chFrameTimeout += Helicopter.change_frame
             self.i += 1
             self.i %= len(Helicopter.frames)
-            self.image = Helicopter.frames[self.i]
+            #self.image = Helicopter.frames[self.i]
 
     def attack(self, entity):
         self.target = entity
