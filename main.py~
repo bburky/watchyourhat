@@ -184,7 +184,7 @@ def generateTiles(block):
     prevGenerated = True
     if block not in seeds:
         prevGenerated = False
-        seeds[block] = random.randrange(1, 10000000)
+        seeds[block] = random.random()
 
     bg, fg, en = mapgen.gen_block(seeds[block])
     for b in bg:
