@@ -46,4 +46,6 @@ class HealthBar(pygame.sprite.Sprite):
         self.rect.width = self.target.rect.width
         if not self.target.alive:
             self.kill()
+        if hasattr(self.target, 'aggro') and not self.target.aggro:
+            self.rect.size = (0,0)
 

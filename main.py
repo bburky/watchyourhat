@@ -217,6 +217,13 @@ fps.maxArea = Rect((0,0), (100, 300))
 fps.bgColor = (255,255,255,0)
 gui.add(fps)
 
+pygame.mouse.set_visible(False)
+crosshair = pygame.sprite.Sprite()
+crosshair.image = ssBottom.image_at(Rect(2*45, 3*45, 45, 45))
+crosshair.rect = crosshair.image.get_rect()
+crosshair.rect.center = pygame.mouse.get_pos()
+gui.add(crosshair)
+
 title = pygame.sprite.Sprite()
 titleImage = load_image('title.png')
 title.image = pygame.Surface(titleImage.get_size(), depth=24)
@@ -229,13 +236,6 @@ title.rect = title.image.get_rect()
 title.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 gui.add(title)
 
-pygame.mouse.set_visible(False)
-crosshair = pygame.sprite.Sprite()
-crosshair.image = ssBottom.image_at(Rect(2*45, 3*45, 45, 45))
-crosshair.rect = crosshair.image.get_rect()
-crosshair.rect.center = pygame.mouse.get_pos()
-gui.add(crosshair)
-
 gameover = pygame.sprite.Sprite()
 gameover.image = load_image('gameover.png')
 gameover.rect = gameover.image.get_rect()
@@ -246,7 +246,7 @@ gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))
 gem.rect = gem.image.get_rect()
 gem.rect.topleft = (0, SCREEN_HEIGHT-45*2)
 
-moneyText = Text("12345")
+moneyText = Text("0")
 moneyText.color = (255, 0, 0)
 moneyText.bgColor = (0,0,0,0)
 moneyText.rect.topleft = Vec2d(gem.rect.topright) + Vec2d(5, 18)
@@ -277,9 +277,9 @@ def handleEvents(events):
         if e.type == KEYDOWN and e.key == K_e:
             for i in items:
                 if i.rect.colliderect(hero.rect):
-                    i.pickup()
                     i.kill()
-                    moneyText = str(int(moneyText.string) + i.worth())
+                    moneyText.string = str(int(moneyText.string) + 1)
+                    moneyText.createImage()
                     break
         elif e.type == KEYDOWN and e.key == K_r:
             hero.reload()
@@ -326,7 +326,6 @@ def refreshScreen():
         bulletsText.setText("Reloading...")
     else:
         bulletsText.setText(str(hero.ammo))
-    print hero.ammo
 
     screen.fill(Config['BG_COLOR'])
     changes = []
@@ -392,7 +391,9 @@ def generateTiles(block):
             img = ssTop.image_at(rec)
 
             truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
-            spr = ethunterone(*truePos)
+
+            enemyClasses = {1: ethunterone, 2: cat}
+            spr = enemyClasses[en[e]](*truePos)
             spr.setCamera(hero)
             spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
             spr.update(0)
@@ -413,10 +414,12 @@ def generateTiles(block):
             enemies_list_lock.release()
 
     for i in it:
+        print i, it[i]
         (x, y) = (3, 3)
         wid = hei = Config['PIXELS_PER_TILE']
         rec = Rect((x*wid, y*hei), (wid, hei))
-        img = ssTop.image_at(rec)
+        print rec
+        img = ssBottom.image_at(rec)
         truePos = [block[0]*Config['PIXELS_PER_BLOCK']+i[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+i[1]*45]
 
         spr = Gem()
@@ -465,6 +468,7 @@ def shoot():
     
     if hero.ammo <= 0:
         hero.reload()
+        musica.pistolreload()
         return
     else:
         hero.shoot()
@@ -499,6 +503,9 @@ def shoot():
             lines.add(((0,0,0), start, end))
     else:
         lines.add(((0,0,0), start, end))
+
+    if hero.ammo <= 0:
+        hero.reload()
 
 def slash():
     if hero.alive:

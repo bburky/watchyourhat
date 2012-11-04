@@ -41,6 +41,7 @@ class cat(RelativeSprite):
         self.range = 50
         self.target = None
         self.attackTimeout = cat.attackTimeout
+        self.aggro = False
     def damage(self, dmg):
         self.health = self.health-dmg
         self.musica.catdmg()
@@ -75,6 +76,7 @@ class cat(RelativeSprite):
         if self.alive and self.target:
             vel = Vec2d(self.target.truePos) - Vec2d(self.truePos)
             if vel.length < self.aware:
+                self.aggro = true
                 vel.length = self.speed
                 self.truePos += vel
         else:
