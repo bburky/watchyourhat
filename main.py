@@ -54,16 +54,16 @@ def manage_network():
             #print len(enemies_list)
             if time.time() - enemy_update_time > 1:
                 enemy_update_time = time.time()
-                #enemies_list_lock.acquire()
+                enemies_list_lock.acquire()
                 for i in enemies_list:
                     en = enemies_list[i]
                     x, y = en.truePos
                     #tgt = en.target.n
                     multiplayer.s.send('2 1 %d %d %d 0;' % (i, x, y))
-                #enemies_list_lock.release()
+                enemies_list_lock.release()
 
         # Harvest Messages
-        #multiplayer.msg_lock.acquire()
+        multiplayer.msg_lock.acquire()
 
         for m in multiplayer.msg_buff:
             #print "harvesting message: %s" % m
@@ -94,7 +94,7 @@ def manage_network():
                 
                 i, x, y, tgt = [int(i) for i in m[2:]]
                 
-                #enemies_list_lock.acquire()
+                enemies_list_lock.acquire()
                 if i not in enemies_list:
                     dx, dy = mapgen.tiles[1][0]
                     wid = hei = Config['PIXELS_PER_TILE']
@@ -125,7 +125,7 @@ def manage_network():
                 
                 spr.target = allies[tgt]
                 enemies_list[i].truePos = [x, y]
-                #enemies_list_lock.release()
+                enemies_list_lock.release()
             elif m_t == 3:
                 x, y, sd = [int(i) for i in m[1:]]
                 if (x, y) in lower: continue
@@ -142,10 +142,9 @@ def manage_network():
                 i, dmg = [int(i) for i in m[1:]]
                 allies[i].damage(dmg)
         del multiplayer.msg_buff[:]
-        #multiplayer.msg_lock.release()
+        multiplayer.msg_lock.release()
         
         time.sleep(.05)
-
 
 multi_args = 1
 if '--fullscreen' in sys.argv: multi_args += 1
@@ -299,7 +298,7 @@ def visibleBlocks(pos):
            ])
 
 def refreshScreen():
-    #block_lock.acquire()
+    block_lock.acquire()
     screen.fill(Config['BG_COLOR'])
     changes = []
     vis = visibleBlocks(hero.truePos)
@@ -314,7 +313,7 @@ def refreshScreen():
     for u in upper:
         if u in vis:
             upper[u].draw(screen)
-    #block_lock.release()
+    block_lock.release()
     gui.draw(screen)
     pygame.display.flip()
 
@@ -358,7 +357,7 @@ def generateTiles(block):
         active.add(spr)
         gpFore.add(spr)
 
-    if not prevGenerated and multiplayer.hosting:
+    if not prevGenerated:# and multiplayer.hosting:
         for e in en:
             x, y = mapgen.tiles[en[e]][0]
             wid = hei = Config['PIXELS_PER_TILE']
@@ -380,29 +379,29 @@ def generateTiles(block):
             actors.add(hb)
             active.add(hb)
             
-            #enemies_list_lock.acquire()
+            enemies_list_lock.acquire()
             enemies_list[enemies_n] = spr
             spr.n = enemies_n
             enemies_n += 1
-            #enemies_list_lock.release()
+            enemies_list_lock.release()
 
     return gpBack, gpFore, gpEnem
 
 def loadBlock(b):
-    #block_lock.acquire()
+    block_lock.acquire()
     l, u, m = generateTiles(b)
     lower[b], upper[b] = l, u
     if b not in middle: middle[b] = m
-    #block_lock.release()
+    block_lock.release()
 
 def unloadBlock(b):
-    #block_lock.acquire()
+    block_lock.acquire()
     for s in lower[b]:
         s.kill()
     for s in upper[b]:
         s.kill()
     del lower[b], upper[b]
-    #block_lock.release()
+    block_lock.release()
 
 
 def passable((x, y)):
@@ -506,15 +505,12 @@ titleTimeout = 2000.0
 
 while True:
     dT = clock.tick(60)
-    dts = {} 
     start = time.time()
     fps.string = "%.2f" % (1000.0/dT)
     handleEvents(pygame.event.get())
 
     if gameStarted:
-        dts['before active.update'] = time.time() - start
         active.update(dT)
-        dts['after active.update'] = time.time() - start
         if hero.alive:
             if keys[K_w]:
                 hero.truePos[1] += -hero.speed*dT/1000
@@ -542,17 +538,15 @@ while True:
             toUnload = loadedBlocks - shouldBeVisible
             print "Loading", toLoad
             print "Unloading", toUnload
-        dts['before send'] = time.time() - start
-        if multiplayer.hosting:
-            for b in toLoad:
-                loadBlock(b)
-                multiplayer.s.send('3 %d %d %d;' % (b[0], b[1], seeds[b]))
-            for b in toUnload:
-                unloadBlock(b)
-                multiplayer.s.send('4 %d %d;' % (b[0], b[1]))
+            if multiplayer.hosting:
+                for b in toLoad:
+                    loadBlock(b)
+                    multiplayer.s.send('3 %d %d %d;' % (b[0], b[1], seeds[b]))
+                for b in toUnload:
+                    unloadBlock(b)
+                    multiplayer.s.send('4 %d %d;' % (b[0], b[1]))
             loadedBlocks = shouldBeVisible
             lastBlockLoad = pygame.time.get_ticks()
-        dts['after send'] = time.time() - start
         hero.face(pygame.mouse.get_pos())
     
     if titleTimeout <= 0:
@@ -569,4 +563,3 @@ while True:
 
     crosshair.rect.center = pygame.mouse.get_pos()
     refreshScreen()
-    print dts
