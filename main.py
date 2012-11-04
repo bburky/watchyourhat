@@ -148,7 +148,7 @@ def manage_network():
                 unloadBlock((x, y))
             elif m_t == 5:
                 i, dmg = [int(i) for i in m[1:]]
-                if i not in enemies_list[i]: continue
+                if i not in enemies_list: continue
                 block_lock.acquire()
                 enemies_list[i].damage(dmg)
                 block_lock.release()
