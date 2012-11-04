@@ -309,7 +309,7 @@ def refreshScreen():
         if l in vis:
             lower[l].draw(screen)
     if gameStarted:
-      actors.draw(screen)
+        actors.draw(screen)
     for l in lines:
         pygame.draw.line(screen, *l)
     lines.clear()
