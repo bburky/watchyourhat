@@ -453,7 +453,7 @@ def unloadBlock(b):
 
 
 def addGunshot(pt1, pt2):
-    lines.add((0,0,0), pt1, pt2)
+    lines.add(((0,0,0), pt1, pt2))
 def passable((x, y)):
     block = whichBlock((x, y))
     tiles = middle[block]
