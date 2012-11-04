@@ -10,6 +10,7 @@ from Ally import Ally
 from Config import Config
 from Hero import Hero
 from Enemies import *
+from Item import *
 from RelativeSprite import RelativeSprite
 from Helicopter import Helicopter
 from Text import Text
@@ -418,7 +419,8 @@ def generateTiles(block):
         img = ssTop.image_at(rec)
         truePos = [block[0]*Config['PIXELS_PER_BLOCK']+i[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+i[1]*45]
 
-        spr = Gem(*truePos)
+        spr = Gem()
+        spr.truePos = truePos
         spr.setCamera(hero)
         spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
         spr.update(0)
