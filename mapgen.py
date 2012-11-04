@@ -178,15 +178,15 @@ def gen_block(seed):
         blocked.add((y, x))
     
     for tr in trees:
-        mp[tr[0]][tr[1]] = 1
-        fg[(tr[0]-1, tr[1]-1)] = 2
-        fg[(tr[0]-1, tr[1])] = 3
-        fg[(tr[0]-1, tr[1]+1)] = 4
-        fg[(tr[0], tr[1]-1)] = 5
-        fg[(tr[0], tr[1]+1)] = 6
-        fg[(tr[0]+1, tr[1]-1)] = 7
-        fg[(tr[0]+1, tr[1])] = 8
-        fg[(tr[0]+1, tr[1]+1)] = 9
+        mp[tr[0]][tr[0]] = 1
+        fg[(tr[1]-1, tr[0]-1)] = 2
+        fg[(tr[1]-1, tr[0])] = 3
+        fg[(tr[1]-1, tr[0]+1)] = 4
+        fg[(tr[1], tr[0]-1)] = 5
+        fg[(tr[1], tr[0]+1)] = 6
+        fg[(tr[1]+1, tr[0]-1)] = 7
+        fg[(tr[1]+1, tr[0])] = 8
+        fg[(tr[1]+1, tr[0]+1)] = 9
     
     for j in xrange(sz_y):
         for i in xrange(sz_x):
