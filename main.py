@@ -61,6 +61,21 @@ fps.maxArea = Rect((0,0), (100, 300))
 fps.bgColor = (255,255,255,0)
 gui.add(fps)
 
+gem = pygame.sprite.Sprite()
+gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))
+gem.rect = gem.image.get_rect()
+gem.rect.topleft = (0, SCREEN_HEIGHT-45*2)
+gui.add(gem)
+
+bullets = pygame.sprite.Sprite()
+bullets.image = ssBottom.image_at(Rect(8*45, 6*45, 3*45, 45))
+bullets.rect = bullets.image.get_rect()
+bullets.rect.topleft = (0, SCREEN_HEIGHT-45)
+gui.add(bullets)
+
+bulletObf = pygame.sprite.Sprite()
+bulletObf.image = pygame.Surface((0,45))
+
 helpText = Text("")
 helpText.rect.topleft = (SCREEN_WIDTH-200, 300)
 helpText.maxArea = Rect((0,0), (100, 50))
@@ -189,7 +204,9 @@ def generateTiles(block):
     return gpBack, gpFore, gpEnem
 
 def loadBlock(b):
-    lower[b], upper[b], middle[b] = generateTiles(b)
+    l, u, m = generateTiles(b)
+    lower[b], upper[b] = l, u
+    if b not in middle: middle[b] = m
 
 def unloadBlock(b):
     for s in lower[b]:
