@@ -565,9 +565,13 @@ while True:
 
     if gameStarted:
         active.update(dT)
+        collidingGems = pygame.sprite.spritecollide(hero, items, False)
+        for c in collidingGems:
+            c.kill()
+            moneyText.string = str(int(moneyText.string) + 1)
         hurters = pygame.sprite.spritecollide(hero, enemies, False)
         for spr in hurters:
-            if spr.attackTimeout <= 0:
+            if spr.attackTimeout <= 0 and spr.alive:
                 hero.damage(spr.power)
                 spr.attackTimeout = 1000
         if hero.alive:
