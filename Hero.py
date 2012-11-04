@@ -37,6 +37,10 @@ class Hero(pygame.sprite.Sprite):
         self.shootTimeout = 200
         self.image = self.rot_center(Hero.images['shooting'], -90+self.theta)
 
+    def slash(self):
+        self.slashTimeout = 200
+        self.image = self.rot_center(Hero.images['knife'], -90+self.theta)
+        
     def face(self, pos):
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
         if self.shootTimeout > 0:
