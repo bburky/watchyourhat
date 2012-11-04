@@ -10,6 +10,7 @@ from Ally import Ally
 from Config import Config
 from Hero import Hero
 from Enemies import *
+from Item import *
 from RelativeSprite import RelativeSprite
 from Helicopter import Helicopter
 from Text import Text
@@ -173,7 +174,7 @@ buttons = defaultdict(lambda: False)
 
 pygame.init()
 musica = Music()
-musica.junglestart()
+##musica.junglestart()
 flags = pygame.DOUBLEBUF|pygame.SRCALPHA|pygame.HWACCEL
 if "--fullscreen" in sys.argv:
     flags |= pygame.FULLSCREEN
@@ -190,6 +191,7 @@ allies = pygame.sprite.RenderUpdates()
 upper = defaultdict(pygame.sprite.RenderUpdates)
 gui = pygame.sprite.RenderUpdates()
 active = pygame.sprite.RenderUpdates()
+items = pygame.sprite.Group()
 lines = set()
 loadedBlocks = set()
 
@@ -200,7 +202,6 @@ background = None
 
 #some state
 random.seed(time.time())
-remainingBullets = 15
 
 hero = Hero()
 active.add(hero)
@@ -216,13 +217,6 @@ fps.maxArea = Rect((0,0), (100, 300))
 fps.bgColor = (255,255,255,0)
 gui.add(fps)
 
-pygame.mouse.set_visible(False)
-crosshair = pygame.sprite.Sprite()
-crosshair.image = ssBottom.image_at(Rect(2*45, 3*45, 45, 45))
-crosshair.rect = crosshair.image.get_rect()
-crosshair.rect.center = pygame.mouse.get_pos()
-gui.add(crosshair)
-
 title = pygame.sprite.Sprite()
 titleImage = load_image('title.png')
 title.image = pygame.Surface(titleImage.get_size(), depth=24)
@@ -234,6 +228,13 @@ title.image.set_alpha(255)
 title.rect = title.image.get_rect()
 title.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 gui.add(title)
+
+pygame.mouse.set_visible(False)
+crosshair = pygame.sprite.Sprite()
+crosshair.image = ssBottom.image_at(Rect(2*45, 3*45, 45, 45))
+crosshair.rect = crosshair.image.get_rect()
+crosshair.rect.center = pygame.mouse.get_pos()
+gui.add(crosshair)
 
 gameover = pygame.sprite.Sprite()
 gameover.image = load_image('gameover.png')
@@ -257,7 +258,7 @@ bullets.rect = bullets.image.get_rect()
 bullets.rect.right -= 100
 bullets.rect.topleft = (0, SCREEN_HEIGHT-45)
 
-bulletsText = Text(str(remainingBullets))
+bulletsText = Text(str(hero.ammo))
 bulletsText.color = (255, 0, 0)
 bulletsText.bgColor = (0,0,0,0)
 bulletsText.rect.topleft = Vec2d(bullets.rect.topright) + Vec2d(5, 18)
@@ -279,6 +280,7 @@ def handleEvents(events):
                     i.pickup()
                     i.kill()
                     moneyText = str(int(moneyText.string) + i.worth())
+                    break
         elif e.type == KEYDOWN and e.key == K_r:
             hero.reload()
             musica.pistolreload()
@@ -319,6 +321,13 @@ def visibleBlocks(pos):
 
 def refreshScreen():
     block_lock.acquire()
+
+    if hero.reloadTimeout >= 0:
+        bulletsText.setText("Reloading...")
+    else:
+        bulletsText.setText(str(hero.ammo))
+    print hero.ammo
+
     screen.fill(Config['BG_COLOR'])
     changes = []
     vis = visibleBlocks(hero.truePos)
@@ -348,7 +357,7 @@ def generateTiles(block):
         prevGenerated = False
         seeds[block] = random.randrange(0,10000000)
 
-    bg, fg, en = mapgen.gen_block(seeds[block])
+    bg, fg, en, it = mapgen.gen_block(seeds[block])
     for b in bg:
         x, y = mapgen.tiles[bg[b]][0]
         wid = hei = Config['PIXELS_PER_TILE']
@@ -403,6 +412,23 @@ def generateTiles(block):
             enemies_n += 1
             enemies_list_lock.release()
 
+    for i in it:
+        (x, y) = (3, 3)
+        wid = hei = Config['PIXELS_PER_TILE']
+        rec = Rect((x*wid, y*hei), (wid, hei))
+        img = ssTop.image_at(rec)
+        truePos = [block[0]*Config['PIXELS_PER_BLOCK']+i[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+i[1]*45]
+
+        spr = Gem()
+        spr.truePos = truePos
+        spr.setCamera(hero)
+        spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+        spr.update(0)
+        items.add(spr)
+        active.add(spr)
+        actors.add(spr)
+        gpEnem.add(spr)
+
     return gpBack, gpFore, gpEnem
 
 def loadBlock(b):
@@ -436,10 +462,12 @@ def shoot():
     global remainingBullets
     if not hero.alive:
         return
-    bulletsText.text = str(hero.ammo)
-    print hero.ammo
-    bulletsText.createImage()
     
+    if hero.ammo <= 0:
+        hero.reload()
+        return
+    else:
+        hero.shoot()
     start = hero.rect.center
     delta = Vec2d(1000, 0)
     delta.rotate(-hero.theta)

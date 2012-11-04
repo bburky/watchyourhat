@@ -17,6 +17,7 @@ class Text(pygame.sprite.Sprite):
         self.maxArea = None
         self.justification = 0
         
+        self.prevText = None
         #CALL THIS LAST
         self.createImage()
     
@@ -42,7 +43,9 @@ class Text(pygame.sprite.Sprite):
 
     def setText(self, value):
         self.st = value
-        self.createImage()
+        if self.st != self.prevText:
+            self.createImage()
+            self.prevText = self.st
     def getText(self):
         return self.st
     def delText(self):
