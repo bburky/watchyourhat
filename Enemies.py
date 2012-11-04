@@ -76,7 +76,7 @@ class cat(RelativeSprite):
         if self.alive and self.target:
             vel = Vec2d(self.target.truePos) - Vec2d(self.truePos)
             if vel.length < self.aware:
-                self.aggro = true
+                self.aggro = True
                 vel.length = self.speed
                 self.truePos += vel
         else:
