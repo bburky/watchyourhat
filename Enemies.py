@@ -17,7 +17,7 @@ class cat(RelativeSprite):
     """Panther Class """
     images = {}
     maxHealth = 50
-    def __init++(self, x, y):
+    def __init__(self, x, y):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
         self.health = ethunterone.maxHealth
