@@ -9,7 +9,7 @@ import mapgen
 from Config import Config
 from Hero import Hero
 from RelativeSprite import RelativeSprite
-
+import time
 
 BG_COLOR = 0,255,255
 SCREEN_WIDTH = 800
@@ -20,7 +20,7 @@ keys = defaultdict(lambda: False)
 pygame.init()
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.DOUBLEBUF|pygame.SRCALPHA)
 
-
+random.seed(time.time())
 # set up sprite groups
 seeds = {}
 lower = defaultdict(pygame.sprite.RenderUpdates)

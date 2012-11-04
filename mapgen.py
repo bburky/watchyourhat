@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import random
+from Config import Config
 
 tiles = {}
 img_id = 0 # image_id
@@ -82,7 +83,7 @@ def gen_block(seed):
     mp = [[0] * sz_x for i in xrange(sz_y)]
     blocked = set([])
     
-    mp_type = random.sample([0]*100 + [1]*20 + [2]*10, 1)[0]
+    mp_type = random.sample([0]*100 + [1]*20 + [2]*10000, 1)[0]
     bg = {}
     fg = {}
     en = {}
