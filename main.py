@@ -34,7 +34,7 @@ def manage_network():
     global hero
     my_id = -1
     if multiplayer.hosting: my_id = 0
-    allies = {}
+    allies2 = {}
     while not all_generated: time.sleep(.5)
     
     enemy_update_time = time.time()
@@ -78,16 +78,16 @@ def manage_network():
                 if i == my_id or my_id == -1: continue
                 
                 if i not in multiplayer.pos:
-                    allies[i] = addAlly()
-                    allies[i].n = i
+                    allies2[i] = addAlly()
+                    allies2[i].n = i
                     print "New player rendered"
                     if multiplayer.hosting:
                         for b in upper:
                             new_m = '3 %d %d %d;' % (b[0], b[1], seeds[b])
                             multiplayer.s.send(new_m)
                 multiplayer.pos[i] = tuple(int(j) for j in m[2:])
-                allies[i].truePos = list(multiplayer.pos[i][:2])
-                allies[i].theta = multiplayer.pos[i][2]
+                allies2[i].truePos = list(multiplayer.pos[i][:2])
+                allies2[i].theta = multiplayer.pos[i][2]
             elif m_t == 2:
                 if len(multiplayer.msg_buff) > 500: continue
                 en_t = int(m[1])
@@ -123,7 +123,7 @@ def manage_network():
                     spr.clientUpdate = True
                     enemies_list[i] = spr
                 
-                spr.target = allies[tgt]
+                spr.target = allies2[tgt]
                 enemies_list[i].truePos = [x, y]
                 enemies_list_lock.release()
             elif m_t == 3:
@@ -140,7 +140,7 @@ def manage_network():
                 enemies_list[i].damage(dmg)
             elif m_t == 6:
                 i, dmg = [int(i) for i in m[1:]]
-                allies[i].damage(dmg)
+                allies2[i].damage(dmg)
         del multiplayer.msg_buff[:]
         multiplayer.msg_lock.release()
         
@@ -491,9 +491,9 @@ def addAlly():
     active.add(hb)
     return a
 
-ally = addAlly()
-ally.truePos = [0, 0]
-ally.update(0)
+#ally = addAlly()
+#ally.truePos = [0, 0]
+#ally.update(0)
 
 lastEnemyCreation = 0
 lastBlockLoad = 0
