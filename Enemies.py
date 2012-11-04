@@ -2,7 +2,16 @@ import pygame
 from Config import Config
 from helpers import *
 import math
+import random
 from RelativeSprite import RelativeSprite
+def rot_center(image, angle):
+    """rotate an image while keeping its center and size"""
+    orig_rect = image.get_rect()
+    rot_image = pygame.transform.rotate(image, angle)
+    rot_rect = orig_rect.copy()
+    rot_rect.center = rot_image.get_rect().center
+    rot_image = rot_image.subsurface(rot_rect).copy()
+    return rot_image
 class ethunterone(RelativeSprite):
     """ Hostile Enemy Hunter Class """
     images = {}
@@ -15,9 +24,13 @@ class ethunterone(RelativeSprite):
         self.speed = 3
         if not ethunterone.images:
             ss = Spritesheet('tiles-bottom.png')
-            ethunterone.images['idle'] = ss.image_at(Rect(0*45, 5*45, 45, 45))
+            ethunterone.images['idle'] = []
+            ethunterone.images['idle'].append(ss.image_at(Rect(5*45, 6*45, 45, 45)))
+            ethunterone.images['idle'].append(ss.image_at(Rect(6*45, 6*45, 45, 45)))
+            ethunterone.images['idle'].append(ss.image_at(Rect(0*45, 5*45, 45, 45)))
             ethunterone.images['dead'] = ss.image_at(Rect(1*45, 5*45, 45, 45))
-        self.image = ethunterone.images['idle']
+        self.i = random.choice(range(len(ethunterone.images['idle'])))
+        self.image = ethunterone.images['idle'][self.i]
         self.rect = self.image.get_rect()
         self.truePos = [x, y]
         self.range = 50
@@ -36,6 +49,21 @@ class ethunterone(RelativeSprite):
         return self
     def update(self, dT):
         RelativeSprite.update(self, dT)
+
+        #change image
+        if self.alive:
+            if random.random() > 0.7:
+                self.i = random.choice(range(len(ethunterone.images['idle'])))
+            self.image = ethunterone.images['idle'][self.i]
+        else:
+            self.image = ethunterone.images['dead']
+
+        #change direction
+        if self.target:
+            pos = self.target.rect.center
+            targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
+            self.image = rot_center(self.image, -90-targetDir)
+
         #animate
         if self.alive and self.target:
             vel = Vec2d(self.target.truePos) - Vec2d(self.truePos)
@@ -65,5 +93,4 @@ class ethunterone(RelativeSprite):
         elif min <= self.aware:
             #coord = #call sterling function
             move(self, coord)
-
         

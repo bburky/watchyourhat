@@ -14,7 +14,7 @@ from Helicopter import Helicopter
 from Text import Text
 import time
 
-BG_COLOR = 69, 142, 36 #green
+BG_COLOR = 23, 82, 8 #green
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
