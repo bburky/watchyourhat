@@ -249,7 +249,11 @@ def passable((x, y)):
 
 def shoot():
     global remainingBullets
-    hero.shoot()
+    if not hero.shoot():
+        return
+    bulletsText.text = str(hero.ammo)
+    bulletsText.createImage()
+    
     start = hero.rect.center
     delta = Vec2d(1000, 0)
     delta.rotate(-hero.theta)
@@ -278,6 +282,8 @@ def shoot():
         lines.add(((0,0,0), start, end))
     remainingBullets -= 1
     bulletsText.string = str(remainingBullets)
+    if not remainingBullets:
+        hero.reloadTimeout = Hero.RELOAD_TIME
 
 def slash():
     hero.slash()

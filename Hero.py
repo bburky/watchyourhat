@@ -9,6 +9,8 @@ class Hero(pygame.sprite.Sprite):
     images = {}
     speed = 200.0
     maxHealth = 100
+    RELOAD_TIME = 2000
+    CLIP = 15
     def __init__(self):
         
         pygame.sprite.Sprite.__init__(self)
@@ -28,8 +30,11 @@ class Hero(pygame.sprite.Sprite):
         self.health = Hero.maxHealth
         self.alive = self.health > 0
 
+        self.ammo = Hero.CLIP
+
         self.shootTimeout = -1
         self.slashTimeout = -1
+        self.reloadTimeout = -1
     
     def rot_center(self, image, angle):
         """rotate an image while keeping its center and size"""
@@ -41,9 +46,14 @@ class Hero(pygame.sprite.Sprite):
         return rot_image
 
     def shoot(self):
-        self.musica.pistolshot()
-        self.shootTimeout = 500
-        self.image = self.rot_center(Hero.images['shooting'], -90+self.theta)
+        if self.ammo:
+            self.musica.pistolshot()
+            self.shootTimeout = 500
+            self.image = self.rot_center(Hero.images['shooting'], -90+self.theta)
+            self.ammo -= 1
+            return True
+        else:
+            return False
 
     def slash(self):
         self.slashTimeout = 200
@@ -71,6 +81,10 @@ class Hero(pygame.sprite.Sprite):
             self.shootTimeout -= dT
         if self.slashTimeout > 0:
             self.slashTimeout -= dT
+        if self.reloadTimeout > 0:
+            self.reloadTimeout -= dT
+            if self.reloadTimeout <= 0:
+                self.ammo = Hero.CLIP
         if self.shootTimeout <= 0 and self.slashTimeout <= 0:
             if self.alive:
                 string = 'idle'
