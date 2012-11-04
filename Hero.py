@@ -17,6 +17,7 @@ class Hero(pygame.sprite.Sprite):
             Hero.images['idle'] = ssFoo.image_at(Rect(0*45, 4*45, 45, 45))
             Hero.images['shooting'] = ssFoo.image_at(Rect(0*45, 6*45, 45, 45))
             Hero.images['knife'] = ssFoo.image_at(Rect(7*45, 6*45, 45, 45))
+            Hero.images['dead'] = ssFoo.image_at(Rect(1*45, 4*45, 45, 45))
         self.image = Hero.images['shooting']
         self.rect = self.image.get_rect()
         self.speed = Hero.speed
@@ -25,6 +26,7 @@ class Hero(pygame.sprite.Sprite):
         self.musica = Music()
 
         self.health = Hero.maxHealth
+        self.alive = self.health > 0
 
         self.shootTimeout = -1
         self.slashTimeout = -1
@@ -61,6 +63,8 @@ class Hero(pygame.sprite.Sprite):
     def damage(self, amount):
         self.musica.damaged()
         self.health -= amount
+        if self.health <= 0:
+            self.alive = False
 
     def update(self, dT):
         if self.shootTimeout > 0:
@@ -68,4 +72,8 @@ class Hero(pygame.sprite.Sprite):
         if self.slashTimeout > 0:
             self.slashTimeout -= dT
         if self.shootTimeout <= 0 and self.slashTimeout <= 0:
-            self.image = self.rot_center(Hero.images['idle'], -90+self.theta)
+            if self.alive:
+                string = 'idle'
+            else:
+                string = 'dead'
+            self.image = self.rot_center(Hero.images[string], -90+self.theta)
