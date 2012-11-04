@@ -247,6 +247,7 @@ def callHeli():
 
 def addAlly(a):
     a = Ally()
+    a.setCamera(hero)
     actors.add(a)
     active.add(a)
     return a
