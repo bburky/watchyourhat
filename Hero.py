@@ -17,7 +17,7 @@ class Hero(pygame.sprite.Sprite):
             Hero.images['idle'] = ssFoo.image_at(Rect(0*45, 4*45, 45, 45))
             Hero.images['shooting'] = ssFoo.image_at(Rect(0*45, 6*45, 45, 45))
             Hero.images['knife'] = ssFoo.image_at(Rect(7*45, 6*45, 45, 45))
-            Hero.images['dead'] = ssFoo.image_at(Rect(1*45, 4*45, 45, 45))
+            Hero.images['dead'] = ssFoo.image_at(Rect(13*45, 3*45, 45, 45))
         self.image = Hero.images['shooting']
         self.rect = self.image.get_rect()
         self.speed = Hero.speed

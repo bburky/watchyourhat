@@ -30,7 +30,7 @@ class cat(RelativeSprite):
             cat.images['idle'] = []
             cat.images['idle'].append(ss.image_at(Rect(1*45, 6*45, 45, 90)))
             cat.images['idle'].append(ss.image_at(Rect(3*45, 6*45, 45, 90)))
-            cat.images['dead'].append(ss.image_at(Rect(11*45, 2*45, 45, 90)))
+            cat.images['dead'].append(ss.image_at(Rect(11*45, 3*45, 45, 90)))
         self.i = 0
         self.image = cat.images['idle'][self.i]
         self.rect = self.image.get_rect()
@@ -115,7 +115,6 @@ class ethunterone(RelativeSprite):
         self.truePos = [x, y]
         self.range = 50
         self.target = None
-        self.theta = 0
         
     def damage(self, dmg):
         self.health = self.health-dmg
@@ -146,7 +145,6 @@ class ethunterone(RelativeSprite):
             pos = self.target.rect.center
             targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
             self.image = rot_center(self.image, -90-targetDir)
-            self.theta = -targetDir
 
         #animate
         if self.alive and self.target:

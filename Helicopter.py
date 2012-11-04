@@ -15,7 +15,7 @@ class Helicopter(RelativeSprite):
         RelativeSprite.__init__(self)
         if not Helicopter.frames:
             ssHeli = Spritesheet('tiles-bottom.png')
-            Helicopter.frames = [ssHeli.image_at(Rect(((10 + 3*i)*45, 0), (45*3, 45*2))) for i in xrange(6)]
+            Helicopter.frames = [ssHeli.image_at(Rect(((10 + 3*i)*45, 0), (45*3, 45*3))) for i in xrange(6)]
 
         self.speed = 3
         self.chFrameTimeout = Helicopter.change_frame
@@ -33,7 +33,8 @@ class Helicopter(RelativeSprite):
             self.truePos += vel
             pos = self.target.rect.center
             targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-            self.image = rot_center(self.image, -90-targetDir)
+            self.image = Helicopter.frames[self.i]
+            self.image = rot_center(self.image, -targetDir)
 
         self.chFrameTimeout -= dT
         if self.chFrameTimeout <= 0:
