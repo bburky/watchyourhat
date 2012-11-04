@@ -180,7 +180,7 @@ def gen_block(seed):
     
     for tr in trees:
         mp[tr[0]][tr[1]] = 1
-        fg[(tr[1], tr[0]) = 1
+        fg[(tr[1], tr[0])] = 1
         fg[(tr[1] - 1, tr[0] - 1)] = 2
         fg[(tr[1], tr[0] - 1)] = 3
         fg[(tr[1] + 1, tr[0] - 1)] = 4
