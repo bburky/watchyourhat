@@ -54,17 +54,42 @@ tiles[117] = [(6, 2), -1]
 # Ruins tiles
 tiles[200] = [(8, 1), -1]
 
+tiles[201] = [None, -1]
+tiles[202] = [None, -1]
+tiles[203] = [None, -1]
+tiles[204] = [None, -1]
+tiles[205] = [None, -1]
+tiles[206] = [None, -1]
+tiles[207] = [None, -1]
+tiles[208] = [None, -1]
+
+
+tiles[210] = [None, -1]
+tiles[211] = [None, -1]
+tiles[212] = [None, -1]
+tiles[213] = [None, -1]
+tiles[214] = [None, -1]
+tiles[215] = [None, -1]
+tiles[216] = [None, -1]
+tiles[217] = [None, -1]
+
+
+
+#def add_borders(x, y, mp, c=set([]))
+#    mp[y][x] = 200
+#    for i in xrange
+    
 def spawn_room(x, y, max_x, max_y, mp, en, it, blocked, p=1):
     sz = 5
     if x < 1 or y < 1: return
     if x > max_x - sz + 1 or y > max_y - sz + 1: return
     if (y, x) in blocked: return
-	
-	while True:
-		i = random.randrange(x + 1, x + sz - 2)
-		j = random.randrange(y + 1, y + sz - 2)
-		
-		it[(i, j)] = 1
+    
+    while True:
+        i = random.randrange(x + 1, x + sz - 2)
+        j = random.randrange(y + 1, y + sz - 2)
+        
+        it[(i, j)] = 1
     
     for i in xrange(x, x + sz):
         for j in xrange(y, y + sz):
@@ -97,7 +122,7 @@ def gen_block(seed):
     bg = {}
     fg = {}
     en = {}
-	it = {}
+    it = {}
     
     #print "-"*8
     #print mp_type
