@@ -18,6 +18,12 @@ class Hero(pygame.sprite.Sprite):
         self.theta = 0.0
         self.truePos = list(self.rect.center)
 
+        self.image = pygame.Surface((self.image.get_width()*2, self.image.get_height()*2))
+        self.image.blit(Hero.images['idle'], (self.image.get_width()/4, self.image.get_height()/4))
+
     def face(self, pos):
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
-        self.image = pygame.transform.rotate(Hero.images['idle'], -90-targetDir)
+        targetDir = targetDir+90
+        diff = targetDir - self.theta
+        self.image = self.rot_center(self.image, diff)
+        self.theta = targetDir

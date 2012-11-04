@@ -1,5 +1,6 @@
 #!/usr/bin/python
 import random
+from Config import Config
 
 tiles = {}
 img_id = 0 # image_id
