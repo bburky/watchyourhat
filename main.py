@@ -122,6 +122,8 @@ def handleEvents(events):
                     i.pickup()
                     i.kill()
                     moneyText = str(int(moneyText.string) + i.worth())
+        elif e.type == KEYDOWN and e.key == K_r:
+            hero.reload()
         elif e.type == KEYUP:
             keys[e.key] = False
         if e.type == QUIT:
@@ -219,7 +221,7 @@ def generateTiles(block):
             img = ssTop.image_at(rec)
 
             truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
-            spr = cat(*truePos)
+            spr = ethunterone(*truePos)
             spr.setCamera(hero)
             spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
             spr.update(0)
@@ -292,8 +294,6 @@ def shoot():
             lines.add(((0,0,0), start, end))
     else:
         lines.add(((0,0,0), start, end))
-    if not hero.ammo:
-        hero.reloadTimeout = Hero.RELOAD_TIME
 
 def slash():
     hero.slash()
@@ -348,6 +348,7 @@ while True:
         active.update(dT)
         hurters = pygame.sprite.spritecollide(hero, enemies, False)
         for spr in hurters:
+            print spr
             if spr.attackTimeout <= 0:
                 hero.damage(spr.power)
                 spr.attackTimeout = 1000

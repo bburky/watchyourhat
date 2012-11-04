@@ -218,7 +218,7 @@ def gen_block(seed):
     #print "\n".join("".join(str(i) for i in r) for r in mp)
     
     # Generate Enemies
-    en_fq = 10
+    en_fq = 5
     while len(en) < en_fq:
         x = random.randrange(1, sz_x - 2)
         y = random.randrange(1, sz_y - 2)

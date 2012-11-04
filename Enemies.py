@@ -39,6 +39,7 @@ class cat(RelativeSprite):
         self.truePos = [x, y]
         self.range = 50
         self.target = None
+        self.attackTimeout = cat.attackTimeout
     def damage(self, dmg):
         self.health = self.health-dmg
         self.musica.catdmg()
@@ -55,6 +56,7 @@ class cat(RelativeSprite):
         RelativeSprite.update(self, dT)
         #change image
         if self.alive:
+            self.attackTimeout -= dT
             if random.random() > 0.7:
                 self.i = random.choice(range(len(cat.images['idle'])))
             self.image = cat.images['idle'][self.i]
@@ -119,6 +121,7 @@ class ethunterone(RelativeSprite):
         self.truePos = [x, y]
         self.range = 50
         self.target = None
+        self.attackTimeout = cat.attackTimeout
         
     def damage(self, dmg):
         self.health = self.health-dmg
@@ -138,6 +141,7 @@ class ethunterone(RelativeSprite):
 
         #change image
         if self.alive:
+            self.attackTimeout -= dT
             if random.random() > 0.7:
                 self.i = random.choice(range(len(ethunterone.images['idle'])))
             self.image = ethunterone.images['idle'][self.i]

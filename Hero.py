@@ -53,11 +53,12 @@ class Hero(pygame.sprite.Sprite):
             self.ammo -= 1
             return True
         else:
+            self.reload()
             return False
 
     def reload(self):
         if self.reloadTimeout <= 0:
-            self.reloadTimeout = RELOAD_TIME
+            self.reloadTimeout = Hero.RELOAD_TIME
 
     def slash(self):
         self.slashTimeout = 200
