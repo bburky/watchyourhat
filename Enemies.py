@@ -17,6 +17,7 @@ class cat(RelativeSprite):
     """Panther Class """
     images = {}
     maxHealth = 50
+    attackTimeout = 1000
     def __init__(self, x, y):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
@@ -94,6 +95,7 @@ class ethunterone(RelativeSprite):
     """ Hostile Enemy Hunter Class """
     images = {}
     maxHealth = 30
+    attackTimeout = 1000
     def __init__(self, x, y):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
