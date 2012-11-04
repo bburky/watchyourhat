@@ -199,6 +199,11 @@ def gen_block(seed):
         fg[(tr[1] - 1, tr[0] + 1)] = 7
         fg[(tr[1], tr[0] + 1)] = 8
         fg[(tr[1] + 1, tr[0] + 1)] = 9
+        
+        if random.random() < .15:
+            en[(x, y)] = 2
+    
+
     
     #Generate Bushes
     bush_c = 0
@@ -225,6 +230,7 @@ def gen_block(seed):
         if (x, y) in en or (x, y) in blocked: continue
         
         en[(x,y)] = 1
+    
     #print en
     return bg, fg, en
 
