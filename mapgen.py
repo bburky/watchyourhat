@@ -79,14 +79,14 @@ def add_borders(x, y, mp, c=set([])):
     c.add((y,x))
     
     i = {}
-    i[0] = mp[y-1][x-1] >= 200
-    i[1] = mp[y-1][x] >= 200
-    i[2] = mp[y-1][x+1] >= 200
-    i[3] = mp[y][x-1] >= 200
-    i[4] = mp[y][x+1] >= 200
-    i[5] = mp[y+1][x-1] >= 200
-    i[6] = mp[y+1][x] >= 200
-    i[7] = mp[y+1][x+1] >= 200
+    i[0] = (mp[y-1][x-1] >= 200)
+    i[1] = (mp[y-1][x] >= 200)
+    i[2] = (mp[y-1][x+1] >= 200)
+    i[3] = (mp[y][x-1] >= 200)
+    i[4] = (mp[y][x+1] >= 200)
+    i[5] = (mp[y+1][x-1] >= 200)
+    i[6] = (mp[y+1][x] >= 200)
+    i[7] = (mp[y+1][x+1] >= 200)
     
     if all(i[j] for j in range(7)) and not i[7]:
         mp[y][x] = 201
@@ -99,9 +99,9 @@ def add_borders(x, y, mp, c=set([])):
     elif all(i[j] for j in range(8) if j != 2) and not i[2]:
         mp[y][x] = 206
     elif not i[4] and i[1] and i[6]:
-        mp[y][x] = 213
+        mp[y][x] = 214
     elif not i[3] and i[1] and i[6]:
-        mp[y][x] = 205
+        mp[y][x] = 213
     elif not i[1] and i[3] and i[4]:
         mp[y][x] = 211
     elif all(not i[j] for j in range(8) if j not in [4, 6, 7]) and i[4] and i[6] and i[7]:
