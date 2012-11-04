@@ -154,6 +154,7 @@ def generateTiles(block):
         spr.image = img
         spr.rect = img.get_rect()
         spr.truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
+        spr.passable = False
         active.add(spr)
         gpEnem.add(spr)
 
@@ -171,7 +172,7 @@ def unloadBlock(b):
 
 def createEnemies():
     pos = hero.truePos
-    tPos = [pos[0]+100, pos[1]+100]
+    tPos = [pos[0]+300, pos[1]+300]
     en = ethunterone(*tPos)
     en.setCamera(hero)
     en.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
@@ -180,8 +181,15 @@ def createEnemies():
     active.add(en)
     en.attack(hero)
 
-createEnemies()
+def passable((x, y)):
+    block = whichBlock((x, y))
+    tiles = middle[block]
+    for m in middle:
+        if m.rect.left < x < m.rect.right and m.rect.top < y < m.rect.bottom:
+            return False
+    return True
 
+lastEnemyCreation = 0
 lastBlockLoad = 0
 while True:
     dT = clock.tick(60)
@@ -196,6 +204,9 @@ while True:
     if keys[K_d]:
         hero.truePos[0] += hero.speed*dT/1000
 
+    if lastEnemyCreation < pygame.time.get_ticks() - 1000:
+        createEnemies()
+        lastEnemyCreation = pygame.time.get_ticks()
     shouldBeVisible = visibleBlocks(hero.truePos)
     if shouldBeVisible != loadedBlocks and (not lastBlockLoad or lastBlockLoad < pygame.time.get_ticks() - 2000):
         toLoad = shouldBeVisible - loadedBlocks

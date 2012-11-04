@@ -17,7 +17,7 @@ class ethunterone(RelativeSprite):
             ss = Spritesheet('tiles-bottom.png')
             ethunterone.images['idle'] = ss.image_at(Rect(0*45, 5*45, 45, 45))
             ethunterone.images['dead'] = ss.image_at(Rect(0*45, 5*45, 45, 45))
-            self.image = ethunterone.images['idle']
+        self.image = ethunterone.images['idle']
         self.rect = self.image.get_rect()
         self.truePos = [x, y]
         print self.truePos

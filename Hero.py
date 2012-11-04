@@ -6,7 +6,7 @@ from helpers import *
 
 class Hero(pygame.sprite.Sprite):
     images = {}
-    speed = 500.0
+    speed = 200.0
     def __init__(self):
         pygame.sprite.Sprite.__init__(self)
         if not Hero.images:
@@ -20,6 +20,7 @@ class Hero(pygame.sprite.Sprite):
 
         self.image = pygame.Surface((self.image.get_width()*2, self.image.get_height()*2))
         self.image.blit(Hero.images['idle'], (self.image.get_width()/4, self.image.get_height()/4))
+        self.health = 100
     
     def rot_center(self, image, angle):
         """rotate an image while keeping its center and size"""
@@ -34,3 +35,6 @@ class Hero(pygame.sprite.Sprite):
         targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
         self.image = self.rot_center(Hero.images['idle'], -90-targetDir)
         self.theta = -targetDir
+
+    def damage(self, amount):
+        self.health -= amount
