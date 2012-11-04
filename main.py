@@ -22,7 +22,7 @@ keys = defaultdict(lambda: False)
 buttons = defaultdict(lambda: False)
 
 pygame.init()
-flags = pygame.DOUBLEBUF|pygame.SRCALPHA
+flags = pygame.DOUBLEBUF|pygame.SRCALPHA|pygame.HWACCEL
 if "--fullscreen" in sys.argv:
     flags |= pygame.FULLSCREEN
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
