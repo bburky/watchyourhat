@@ -41,7 +41,7 @@ class cat(RelativeSprite):
         self.range = 50
         self.target = None
         self.attackTimeout = cat.attackTimeout
-        self.aggro = false
+        self.aggro = False
     def damage(self, dmg):
         self.health = self.health-dmg
         self.musica.catdmg()

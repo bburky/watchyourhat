@@ -15,6 +15,3 @@ class Gem(Item):
 
         self.image = Spritesheet('tiles-bottom.png').image_at(Rect(3*45, 3*45, 45, 45))
         self.rect = self.image.get_rect()
-
-    def worth():
-        return 100

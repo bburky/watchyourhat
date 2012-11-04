@@ -246,7 +246,7 @@ gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))
 gem.rect = gem.image.get_rect()
 gem.rect.topleft = (0, SCREEN_HEIGHT-45*2)
 
-moneyText = Text("12345")
+moneyText = Text("0")
 moneyText.color = (255, 0, 0)
 moneyText.bgColor = (0,0,0,0)
 moneyText.rect.topleft = Vec2d(gem.rect.topright) + Vec2d(5, 18)
@@ -278,7 +278,8 @@ def handleEvents(events):
             for i in items:
                 if i.rect.colliderect(hero.rect):
                     i.kill()
-                    moneyText = str(int(moneyText.string) + i.worth())
+                    moneyText.string = str(int(moneyText.string) + 1)
+                    moneyText.createImage()
                     break
         elif e.type == KEYDOWN and e.key == K_r:
             hero.reload()
@@ -390,7 +391,9 @@ def generateTiles(block):
             img = ssTop.image_at(rec)
 
             truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
-            spr = ethunterone(*truePos)
+
+            enemyClasses = {1: ethunterone, 2: cat}
+            spr = enemyClasses[en[e]](*truePos)
             spr.setCamera(hero)
             spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
             spr.update(0)
