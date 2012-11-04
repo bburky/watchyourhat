@@ -66,6 +66,13 @@ fps.maxArea = Rect((0,0), (100, 300))
 fps.bgColor = (255,255,255,0)
 gui.add(fps)
 
+pygame.mouse.set_visible(False)
+crosshair = pygame.sprite.Sprite()
+crosshair.image = ssBottom.image_at(Rect(2*45, 3*45, 45, 45))
+crosshair.rect = crosshair.image.get_rect()
+crosshair.rect.center = pygame.mouse.get_pos()
+gui.add(crosshair)
+
 gem = pygame.sprite.Sprite()
 gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))
 gem.rect = gem.image.get_rect()
@@ -361,4 +368,5 @@ while True:
         loadedBlocks = shouldBeVisible
         lastBlockLoad = pygame.time.get_ticks()
     hero.face(pygame.mouse.get_pos())
+    crosshair.rect.center = pygame.mouse.get_pos()
     refreshScreen()
