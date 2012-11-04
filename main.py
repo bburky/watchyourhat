@@ -465,6 +465,7 @@ def shoot():
     
     if hero.ammo <= 0:
         hero.reload()
+        musica.pistolreload()
         return
     else:
         hero.shoot()
