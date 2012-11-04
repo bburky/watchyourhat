@@ -122,6 +122,7 @@ def generateTiles(block):
     for e in en:
         x, y = mapgen.tiles[en[e]][0]
         wid = hei = Config['PIXELS_PER_TILE']
+        print e, (x*wid, y*hei)
         rec = Rect((x*wid, y*hei), (wid, hei))
         img = ssTop.image_at(rec)
         spr = RelativeSprite(camera=hero)
