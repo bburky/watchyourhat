@@ -22,6 +22,7 @@ class Ally(RelativeSprite):
         self.health = Ally.maxHealth
 
         self.shootTimeout = -1
+        self.slashTimeout = -1
     
     def rot_center(self, image, angle):
         """rotate an image while keeping its center and size"""
@@ -35,6 +36,10 @@ class Ally(RelativeSprite):
     def shoot(self):
         self.shootTimeout = 200
         self.image = self.rot_center(Ally.images['shooting'], -90+self.theta)
+
+    def slash(self):
+        self.slashTimeout = 200
+        self.image = self.rot_center(Hero.images['knife'], -90+self.theta)
 
     def setTheta(self, theta):
         self.theta = theta
@@ -51,3 +56,11 @@ class Ally(RelativeSprite):
 
     def damage(self, amount):
         self.health -= amount
+
+    def update(self, dT):
+        if self.shootTimeout > 0:
+            self.shootTimeout -= dT
+        if self.slashTimeout > 0:
+            self.slashTimeout -= dT
+        if self.shootTimeout <= 0 and self.slashTimeout <= 0:
+            self.image = self.rot_center(Hero.images['idle'], -90+self.theta)
