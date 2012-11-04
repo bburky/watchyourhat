@@ -455,8 +455,18 @@ def unloadBlock(b):
     block_lock.release()
 
 
-def addGunshot(pt1, pt2):
-    lines.add(((0,0,0), pt1, pt2))
+def addGunshot((x1,y1), (x2,y2)):
+    """absolute -> screen"""
+    x1 = x1 - hero.truePos[0] + SCREEN_WIDTH/2
+    x2 = x2 - hero.truePos[0] + SCREEN_WIDTH/2
+    y1 = y1 - hero.truePos[1] + SCREEN_HEIGHT/2
+    y2 = y2 - hero.truePos[1] + SCREEN_HEIGHT/2
+    lines.add(((0,0,0), (x1,y1), (x2,y2)))
+
+def screenToAbs((x,y)):
+    x = x + hero.truePos[0] - SCREEN_WIDTH/2
+    y = y + hero.truePos[1] - SCREEN_HEIGHT/2
+    return (x, y)
 
 def passable((x, y)):
     block = whichBlock((x, y))
