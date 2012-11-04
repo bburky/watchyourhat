@@ -74,10 +74,24 @@ tiles[216] = [None, -1]
 tiles[217] = [None, -1]
 
 
-
-#def add_borders(x, y, mp, c=set([]))
-#    mp[y][x] = 200
-#    for i in xrange
+border_map = {}
+def add_borders(x, y, mp, c=set([])):
+    if (y, x) in c: return
+    c.add((y,x))
+    
+    i = {}
+    i[0] = mp[y-1][x-1] >= 200
+    i[1] = mp[y-1][x] >= 200
+    i[2] = mp[y-1][x+1] >= 200
+    i[3] = mp[y][x-1] >= 200
+    i[4] = mp[y-1][x+1] >= 200
+    i[5] = mp[y-1][x-1] >= 200
+    i[6] = mp[y-1][x-1] >= 200
+    i[7] = mp[y-1][x-1] >= 200
+    
+    mp[y][x] = 200
+    for dx, dy in [(0, 1), (0, -1), (-1, 0), (1, 0)]:
+        add_borders(x + dx, y + dy, mp, c)
     
 def spawn_room(x, y, max_x, max_y, mp, en, it, blocked, p=1):
     sz = 5
@@ -85,11 +99,11 @@ def spawn_room(x, y, max_x, max_y, mp, en, it, blocked, p=1):
     if x > max_x - sz + 1 or y > max_y - sz + 1: return
     if (y, x) in blocked: return
     
-    while True:
-        i = random.randrange(x + 1, x + sz - 2)
-        j = random.randrange(y + 1, y + sz - 2)
-        
-        it[(i, j)] = 1
+    i = random.randrange(x + 1, x + sz - 2)
+    j = random.randrange(y + 1, y + sz - 2)
+    
+    it[(i, j)] = 1
+		
     
     for i in xrange(x, x + sz):
         for j in xrange(y, y + sz):
@@ -267,4 +281,9 @@ def gen_block(seed):
     return bg, fg, en, it
 
 m = gen_block(712)
+m = gen_block(713)
+m = gen_block(714)
+m = gen_block(715)
+m = gen_block(716)
+m = gen_block(717)
 
