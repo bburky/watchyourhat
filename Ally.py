@@ -15,12 +15,14 @@ class Ally(RelativeSprite):
             Ally.images['idle'] = ssFoo.image_at(Rect(0*45, 4*45, 45, 45))
             Ally.images['shooting'] = ssFoo.image_at(Rect(0*45, 6*45, 45, 45))
             Ally.images['knife'] = ssFoo.image_at(Rect(7*45, 6*45, 45, 45))
+            Ally.images['dead'] = ssFoo.image_at(Rect(1*45, 6*45, 45, 45))
         self.image = Ally.images['idle']
         self.rect = self.image.get_rect()
         self.speed = Ally.speed
         self.theta = 0.0
 
         self.health = Ally.maxHealth
+        self.alive = True
 
         self.shootTimeout = -1
         self.slashTimeout = -1
@@ -44,6 +46,9 @@ class Ally(RelativeSprite):
 
     def damage(self, amount):
         self.health -= amount
+        if self.health <= 0:
+            self.alive = False
+            self.image = Ally.images['dead']
 
     def update(self, dT):
         RelativeSprite.update(self, dT)

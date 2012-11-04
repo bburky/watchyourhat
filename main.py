@@ -217,7 +217,7 @@ def generateTiles(block):
             img = ssTop.image_at(rec)
 
             truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
-            spr = ethunterone(*truePos)
+            spr = cat(*truePos)
             spr.setCamera(hero)
             spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
             spr.update(0)
@@ -246,6 +246,8 @@ def unloadBlock(b):
     del lower[b], upper[b]
 
 
+def addGunshot(pt1, pt2):
+    lines.add((0,0,0), pt1, pt2)
 def passable((x, y)):
     block = whichBlock((x, y))
     tiles = middle[block]
@@ -259,6 +261,7 @@ def shoot():
     if not hero.shoot():
         return
     bulletsText.text = str(hero.ammo)
+    print hero.ammo
     bulletsText.createImage()
     
     start = hero.rect.center
@@ -287,9 +290,7 @@ def shoot():
             lines.add(((0,0,0), start, end))
     else:
         lines.add(((0,0,0), start, end))
-    remainingBullets -= 1
-    bulletsText.string = str(remainingBullets)
-    if not remainingBullets:
+    if not hero.ammo:
         hero.reloadTimeout = Hero.RELOAD_TIME
 
 def slash():
