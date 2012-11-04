@@ -240,6 +240,7 @@ def callHeli():
     h = Helicopter()
     h.truePos = [hero.truePos[0], hero.truePos[1]]
     h.camera = hero
+    h.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.h))
     h.update(0)
     h.target = hero
     active.add(h)
@@ -248,6 +249,7 @@ def callHeli():
 def addAlly(a):
     a = Ally()
     a.setCamera(hero)
+    a.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.y))
     actors.add(a)
     active.add(a)
     return a
