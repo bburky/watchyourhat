@@ -595,7 +595,6 @@ while True:
             if spr.attackTimeout <= 0 and spr.alive:
                 hero.damage(spr.power)
                 multiplayer.s.send('6 %d %d;' % (hero.n, spr.power))
-                multiple
                 spr.attackTimeout = 1000
         if hero.alive:
             if keys[K_w]:
