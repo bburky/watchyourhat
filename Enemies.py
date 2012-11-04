@@ -24,7 +24,7 @@ class cat(RelativeSprite):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
         self.health = ethunterone.maxHealth
-        self.aware = Config['PIXELS_PER_TILE']*20
+        self.aware = Config['PIXELS_PER_TILE']*3
         #self.id = id
         self.speed = 9
         self.musica = Music()
@@ -106,7 +106,7 @@ class ethunterone(RelativeSprite):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
         self.health = ethunterone.maxHealth
-        self.aware = Config['PIXELS_PER_TILE']*20
+        self.aware = Config['PIXELS_PER_TILE']*8
         #self.id = id
         self.speed = 3
         self.musica = Music()
