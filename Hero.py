@@ -38,7 +38,7 @@ class Hero(pygame.sprite.Sprite):
 
     def shoot(self):
         self.musica.pistolshot()
-        self.shootTimeout = 200
+        self.shootTimeout = 500
         self.image = self.rot_center(Hero.images['shooting'], -90+self.theta)
 
     def slash(self):
