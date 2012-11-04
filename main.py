@@ -19,25 +19,20 @@ pygame.init()
 
 
 # set up sprite groups
-lower = {}
-upper = {}
-
-allSprites = pygame.sprite.Group()
+seeds = {}
+lower = defaultdict(pygame.sprite.Group)
+actors = pygame.sprite.Group()
+upper = defaultdict(pygame.sprite.Group)
+active = pygame.sprite.Group()
+loadedBlocks = set()
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-active = pygame.sprite.Group()
 background = None
 
 hero = Hero()
 active.add(hero)
+actors.add(hero)
 hero.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
-
-loadedBlocks = set()
-
-static = RelativeSprite(hero)
-static.image = load_image('static.png', (40,40))
-active.add(static)
-static.rect.topleft = (500,400)
 
 clock = pygame.time.Clock()
 
@@ -76,12 +71,27 @@ def visibleBlocks(pos):
 
 def refreshScreen():
 	screen.fill(BG_COLOR)
-	changes = active.draw(screen)
-	pygame.display.update(changes)
+	for l in lower:
+		lower[l].draw(screen)
+	actors.draw(screen)
+	for u in upper:
+		upper[u].draw(screen)
 	pygame.display.flip()
 
 def generateTiles(block):
-	return pygame.sprite.Group(), pygame.sprite.Group()
+	square = pygame.Surface((200,300))
+	square.fill((255,0,255))
+	sp = RelativeSprite(camera=hero)
+	sp.image = square
+	sp.rect = square.get_rect()
+	sp.truePos = [block[0]*Config['PIXELS_PER_BLOCK']+3, block[1]*Config['PIXELS_PER_BLOCK']]
+	return pygame.sprite.Group(sp), pygame.sprite.Group()
+
+def unloadBlock(b):
+	lower[b].empty()
+	upper[b].empty()
+	del lower[b], upper[b]
+	active.remove(lower[b], upper[b])
 
 while True:
 	dT = clock.tick(60)
@@ -99,16 +109,14 @@ while True:
 	shouldBeVisible = visibleBlocks(hero.truePos)
 	if shouldBeVisible != loadedBlocks:
 		toLoad = shouldBeVisible - loadedBlocks
-		toDeLoad = loadedBlocks - shouldBeVisible
+		toUnload = loadedBlocks - shouldBeVisible
+		print "Loading", toLoad
+		print "Unloading", toUnload
 		for b in toLoad:
 			lower[b], upper[b] = generateTiles(b)
 			active.add(lower[b], upper[b])
-		for b in toDeLoad:
-			lower[b].empty()
-			upper[b].empty()
-			del lower[b]
-			del upper[b]
-			active.remove(lower[b], upper[b])
+		for b in toUnload:
+			unloadBlock(b)
 		loadedBlocks = shouldBeVisible
 	hero.face(pygame.mouse.get_pos())
 	refreshScreen()
