@@ -1,7 +1,6 @@
 #!/usr/bin/python
 import random
 
-
 tiles = {}
 img_id = 0 # image_id
 layer = 1 # -1 = Background | 0 = Collides | 1 = Foreground
@@ -48,21 +47,49 @@ tiles[115] = [(4, 2), -1]
 tiles[116] = [(5, 2), -1]
 tiles[117] = [(6, 2), -1]
 
+# Ruins tiles
+tiles[200] = [(8, 1), -1]
+
+def spawn_room(x, y, max_x, max_y, mp, en, blocked, p=1):
+    sz = 10
+    if x < 1 or y < 1: return
+    if x > max_x - sz + 1 or y > max_y - sz + 1: return
+    if (x, y) in blocked: return
+    blocked.add((x, y))
+    
+    for i in xrange(x, x + 10):
+        for j in xrange(y, y + 10):
+            mp[i][j] = 200
+    
+    en_c = 0
+    while en_c < 3:
+        i = random.randrange(x, x + sz)
+        j = random.randrange(y, y + sz)
+        if (i, j) in en: continue
+        
+        en_c += 1
+        en[(i, j)] = 1
+    
+    for dx, dy in [(0, -10), (0, 10), (10, 0), (-10, 0)]:
+        if random.random() > p: continue
+        spawn_room(x+dx, y+dy, max_x, max_y, mp, en, blocked, p*.5)
+
 def gen_block(seed):
     sz_x = sz_y = 64
-    tr_dens = 10
+    tr_dens = 20
     random.seed(seed)
     
     mp = [[0] * sz_x for i in xrange(sz_y)]
     blocked = set([])
     
-    mp_type = random.sample([0]*100 + [1]*100, 1)[0]
+    mp_type = random.sample([0]*100 + [1]*20 + [2]*10, 1)[0]
     bg = {}
     fg = {}
     en = {}
-    print "-"*8
-    print mp_type
-    print "-"*8
+    
+    #print "-"*8
+    #print mp_type
+    #print "-"*8
     
     if mp_type == 1:
         # Generate Clearing
@@ -92,7 +119,7 @@ def gen_block(seed):
         mp[y+3][x-1] = 104
         blocked.add((y+3, x+3))
         mp[y+3][x+3] = 102
-		
+        
         blocked.add((y-3, x-1))
         mp[y-3][x-1] = 110
         blocked.add((y-3, x+3))
@@ -101,7 +128,7 @@ def gen_block(seed):
         mp[y+4][x-1] = 115
         blocked.add((y+4, x+3))
         mp[y+4][x+3] = 117
-		
+        
         blocked.add((y-2, x-3))
         mp[y-2][x-3] = 110
         blocked.add((y-2, x+5))
@@ -110,7 +137,7 @@ def gen_block(seed):
         mp[y+3][x-3] = 115
         blocked.add((y+3, x+5))
         mp[y+3][x+5] = 117
-		
+        
         # (Linear Edges)
         top_edge = [(y-2, x-2), (y-3, x), (y-3, x+1), (y-3, x+2), (y-2, x+4)]
         bot_edge = [(y+3, x-2), (y+4, x), (y+4, x+1), (y+4, x+2), (y+3, x+4)]
@@ -132,6 +159,13 @@ def gen_block(seed):
         for j, i in bot_edge:
             blocked.add((j, i))
             mp[j][i] = 103
+    
+    elif mp_type == 2:
+        tr_dens = 2
+        x = random.randrange(1, sz_x-10-2)
+        y = random.randrange(1, sz_y-10-2)
+        
+        spawn_room(x, y, sz_x-1, sz_y-1, mp, en, blocked)
     
     # Generate Trees
     trees = set([])
@@ -168,8 +202,8 @@ def gen_block(seed):
         if (x, y) in en or (x, y) in blocked: continue
         
         en[(x,y)] = 1
-    print en
+    #print en
     return bg, fg, en
 
-m = gen_block(36731233)
+m = gen_block(712)
 
