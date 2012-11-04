@@ -28,9 +28,9 @@ class cat(RelativeSprite):
         if not cat.images:
             ss = Spritesheet('tiles-bottom.png')
             cat.images['idle'] = []
-            cat.images['idle'].append(ss.image_at(Rect(1*45, 6*45, 45, 90)))
-            cat.images['idle'].append(ss.image_at(Rect(3*45, 6*45, 45, 90)))
-            cat.images['dead'].append(ss.image_at(Rect(11*45, 3*45, 45, 90)))
+            cat.images['idle'].append(ss.image_at(Rect(12*45, 3*45, 45, 90)))
+            cat.images['idle'].append(ss.image_at(Rect(14*45, 3*45, 45, 90)))
+            cat.images['dead'].append(ss.image_at(Rect(10*45, 3*45, 45, 90)))
         self.i = 0
         self.image = cat.images['idle'][self.i]
         self.rect = self.image.get_rect()
