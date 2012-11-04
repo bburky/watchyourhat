@@ -62,8 +62,10 @@ def manage_network():
                 for i in enemies_list:
                     en = enemies_list[i]
                     x, y = en.truePos
+                    en_t = 1
+                    if isinstance(en, cat): en_t = 2
                     #tgt = en.target.n
-                    multiplayer.s.send('2 1 %d %d %d 0;' % (i, x, y))
+                    multiplayer.s.send('2 %d %d %d %d 0;' % (en_t, i, x, y))
                 enemies_list_lock.release()
 
         # Harvest Messages
@@ -108,7 +110,11 @@ def manage_network():
         
                     #truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
                     truePos = [x, y]
-                    spr = ethunterone(*truePos)
+                    spr = None
+                    if en_t == 2:
+                        spr = cat(*truePos)
+                    else:
+                        spr = ethunterone(*truePos)
                     spr.setCamera(hero)
                     spr.setOffset((SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
                     spr.update(0)
