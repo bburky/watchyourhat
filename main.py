@@ -140,10 +140,14 @@ def manage_network():
                 unloadBlock((x, y))
             elif m_t == 5:
                 i, dmg = [int(i) for i in m[1:]]
+                block_lock.acquire()
                 enemies_list[i].damage(dmg)
+                block_lock.release()
             elif m_t == 6:
+                block_lock.acquire()
                 i, dmg = [int(i) for i in m[1:]]
                 allies2[i].damage(dmg)
+                block_lock.release()
         del multiplayer.msg_buff[:]
         multiplayer.msg_lock.release()
         
@@ -316,9 +320,9 @@ def refreshScreen():
     for u in upper:
         if u in vis:
             upper[u].draw(screen)
-    block_lock.release()
     gui.draw(screen)
     pygame.display.flip()
+    block_lock.release()
 
 def generateTiles(block):
     global enemies_n
