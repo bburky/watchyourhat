@@ -5,6 +5,7 @@ import math
 import random
 from RelativeSprite import RelativeSprite
 from Music import Music
+
 def rot_center(image, angle):
     """rotate an image while keeping its center and size"""
     orig_rect = image.get_rect()
@@ -94,6 +95,7 @@ class cat(RelativeSprite):
         elif min <= self.aware:
             #coord = #call sterling function
             move(self, coord)
+
 class ethunterone(RelativeSprite):
     """ Hostile Enemy Hunter Class """
     images = {}
@@ -108,6 +110,9 @@ class ethunterone(RelativeSprite):
         #self.id = id
         self.speed = 3
         self.musica = Music()
+        
+        self.clientUpdate = False
+        
         if not ethunterone.images:
             ss = Spritesheet('tiles-bottom.png')
             ethunterone.images['idle'] = []
@@ -128,6 +133,7 @@ class ethunterone(RelativeSprite):
         self.musica.enemydamaged()
         if self.health <= 0:
             self.die()
+    
     def die(self):
         self.alive = False
         self.deathTime = pygame.time.get_ticks()
@@ -147,7 +153,12 @@ class ethunterone(RelativeSprite):
             self.image = ethunterone.images['idle'][self.i]
         else:
             self.image = ethunterone.images['dead']
-
+        
+        #if self.clientUpdate:
+        #    targetDir = -self.theta
+        #    self.image = rot_center(self.image, -90-targetDir)
+        #    return
+        
         #change direction
         if self.alive and self.target:
             pos = self.target.rect.center
@@ -157,12 +168,13 @@ class ethunterone(RelativeSprite):
         #animate
         if self.alive and self.target:
             vel = Vec2d(self.target.truePos) - Vec2d(self.truePos)
-            if vel.length < self.aware:
+            if vel.length < self.aware and vel.length != 0:
                 vel.length = self.speed
                 self.truePos += vel
         else:
             if hasattr(self, 'deathTime') and self.deathTime < pygame.time.get_ticks() - 1000:
                 self.kill()
+    
     def ai(self):
         min = float("inf");
         player = -1;

@@ -14,14 +14,15 @@ from RelativeSprite import RelativeSprite
 from Helicopter import Helicopter
 from Text import Text
 from HealthBar import HealthBar
-from Music import Music
 import time
 import multiplayer
 import threading
 
 # Sterling's tired. This is his network code. Sorry.
 
+
 hero = None
+posi = None
 
 all_generated = False
 
@@ -31,14 +32,11 @@ block_lock = threading.Lock()
 enemies_n = 1
 
 def manage_network():
-    global hero
-    while not all_generated: time.sleep(.5)
-    
-    allies2 = {}
+    global hero, posi
     my_id = -1
-    if multiplayer.hosting:
-        my_id = 0
-        allies2[my_id] = hero
+    if multiplayer.hosting: my_id = 0
+    allies = {}
+    while not all_generated: time.sleep(.5)
     
     enemy_update_time = time.time()
     while True:
@@ -47,6 +45,7 @@ def manage_network():
         x, y = hero.truePos
         theta = hero.theta
         if my_id > -1:
+            posi.string = "%d, %d, %d" % (x, y, theta)
             multiplayer.s.send('1 %d %d %d %d;' % (my_id, x, y, theta))
 
         if multiplayer.hosting:
@@ -75,23 +74,22 @@ def manage_network():
 
             if m_t == 0:
                 my_id = int(m[1])
-                allies2[my_id] = hero
             elif m_t == 1:
                 if len(multiplayer.msg_buff) > 500: continue
                 i = int(m[1])
                 if i == my_id or my_id == -1: continue
                 
                 if i not in multiplayer.pos:
-                    allies2[i] = addAlly()
-                    allies2[i].n = i
+                    allies[i] = addAlly()
+                    allies[i].n = i
                     print "New player rendered"
                     if multiplayer.hosting:
                         for b in upper:
                             new_m = '3 %d %d %d;' % (b[0], b[1], seeds[b])
                             multiplayer.s.send(new_m)
                 multiplayer.pos[i] = tuple(int(j) for j in m[2:])
-                allies2[i].truePos = list(multiplayer.pos[i][:2])
-                allies2[i].theta = multiplayer.pos[i][2]
+                allies[i].truePos = list(multiplayer.pos[i][:2])
+                allies[i].theta = multiplayer.pos[i][2]
             elif m_t == 2:
                 if len(multiplayer.msg_buff) > 500: continue
                 en_t = int(m[1])
@@ -127,7 +125,7 @@ def manage_network():
                     spr.clientUpdate = True
                     enemies_list[i] = spr
                 
-                spr.target = allies2[tgt]
+                spr.target = allies[tgt]
                 enemies_list[i].truePos = [x, y]
                 enemies_list_lock.release()
             elif m_t == 3:
@@ -141,18 +139,15 @@ def manage_network():
                 unloadBlock((x, y))
             elif m_t == 5:
                 i, dmg = [int(i) for i in m[1:]]
-                block_lock.acquire()
                 enemies_list[i].damage(dmg)
-                block_lock.release()
             elif m_t == 6:
-                block_lock.acquire()
                 i, dmg = [int(i) for i in m[1:]]
-                allies2[i].damage(dmg)
-                block_lock.release()
+                allies[i].damage(dmg)
         del multiplayer.msg_buff[:]
         multiplayer.msg_lock.release()
         
         time.sleep(.05)
+
 
 multi_args = 1
 if '--fullscreen' in sys.argv: multi_args += 1
@@ -171,8 +166,6 @@ keys = defaultdict(lambda: False)
 buttons = defaultdict(lambda: False)
 
 pygame.init()
-musica = Music()
-musica.junglestart()
 flags = pygame.DOUBLEBUF|pygame.SRCALPHA|pygame.HWACCEL
 if "--fullscreen" in sys.argv:
     flags |= pygame.FULLSCREEN
@@ -215,6 +208,7 @@ fps.maxArea = Rect((0,0), (100, 300))
 fps.bgColor = (255,255,255,0)
 gui.add(fps)
 
+<<<<<<< Updated upstream
 pygame.mouse.set_visible(False)
 crosshair = pygame.sprite.Sprite()
 crosshair.image = ssBottom.image_at(Rect(2*45, 3*45, 45, 45))
@@ -233,29 +227,48 @@ title.image.set_alpha(255)
 title.rect = title.image.get_rect()
 title.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
 gui.add(title)
+=======
+
+posi = Text("")
+posi.rect.topleft = (0, 30)
+posi.maxArea = Rect((0,0), (100, 300))
+posi.bgColor = (255,255,255,0)
+gui.add(posi)
+>>>>>>> Stashed changes
 
 gem = pygame.sprite.Sprite()
 gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))
 gem.rect = gem.image.get_rect()
 gem.rect.topleft = (0, SCREEN_HEIGHT-45*2)
+gui.add(gem)
 
 moneyText = Text("12345")
 moneyText.color = (255, 0, 0)
 moneyText.bgColor = (0,0,0,0)
 moneyText.rect.topleft = Vec2d(gem.rect.topright) + Vec2d(5, 18)
 moneyText.createImage()
+gui.add(moneyText)
 
 bullets = pygame.sprite.Sprite()
 bullets.image = ssBottom.image_at(Rect(8*45, 6*45, 45, 45))
 bullets.rect = bullets.image.get_rect()
 bullets.rect.right -= 100
 bullets.rect.topleft = (0, SCREEN_HEIGHT-45)
+gui.add(bullets)
 
 bulletsText = Text(str(remainingBullets))
 bulletsText.color = (255, 0, 0)
 bulletsText.bgColor = (0,0,0,0)
 bulletsText.rect.topleft = Vec2d(bullets.rect.topright) + Vec2d(5, 18)
 bulletsText.createImage()
+gui.add(bulletsText)
+
+helpText = Text("")
+helpText.rect.topleft = (SCREEN_WIDTH-200, 300)
+helpText.maxArea = Rect((0,0), (100, 50))
+helpText.bgColor = (152,152,152,200)
+helpText.string = "Foo"
+gui.add(helpText)
 
 clock = pygame.time.Clock()
 
@@ -273,9 +286,6 @@ def handleEvents(events):
                     i.pickup()
                     i.kill()
                     moneyText = str(int(moneyText.string) + i.worth())
-        elif e.type == KEYDOWN and e.key == K_r:
-            hero.reload()
-            musica.pistolreload()
         elif e.type == KEYUP:
             keys[e.key] = False
         if e.type == QUIT:
@@ -288,7 +298,6 @@ def handleEvents(events):
 
         if e.type == MOUSEBUTTONDOWN and e.button == 3:
             slash()
-            musica.knife()
 
 def whichBlock(pos):
     # calculates the block that the position is part of
@@ -319,17 +328,16 @@ def refreshScreen():
     for l in lower:
         if l in vis:
             lower[l].draw(screen)
-    if gameStarted:
-        actors.draw(screen)
+    actors.draw(screen)
     for l in lines:
         pygame.draw.line(screen, *l)
     lines.clear()
     for u in upper:
         if u in vis:
             upper[u].draw(screen)
+    block_lock.release()
     gui.draw(screen)
     pygame.display.flip()
-    block_lock.release()
 
 def generateTiles(block):
     global enemies_n
@@ -375,7 +383,7 @@ def generateTiles(block):
             wid = hei = Config['PIXELS_PER_TILE']
             rec = Rect((x*wid, y*hei), (wid, hei))
             img = ssTop.image_at(rec)
-
+            
             truePos = [block[0]*Config['PIXELS_PER_BLOCK']+e[0]*45, block[1]*Config['PIXELS_PER_BLOCK']+e[1]*45]
             spr = ethunterone(*truePos)
             spr.setCamera(hero)
@@ -386,7 +394,7 @@ def generateTiles(block):
             active.add(spr)
             spr.target = hero
             gpEnem.add(spr)
-
+            
             hb = HealthBar(target=spr)
             actors.add(hb)
             active.add(hb)
@@ -416,8 +424,6 @@ def unloadBlock(b):
     block_lock.release()
 
 
-def addGunshot(pt1, pt2):
-    lines.add((0,0,0), pt1, pt2)
 def passable((x, y)):
     block = whichBlock((x, y))
     tiles = middle[block]
@@ -428,10 +434,9 @@ def passable((x, y)):
 
 def shoot():
     global remainingBullets
-    if not hero.alive:
+    if not hero.shoot():
         return
     bulletsText.text = str(hero.ammo)
-    print hero.ammo
     bulletsText.createImage()
     
     start = hero.rect.center
@@ -465,22 +470,29 @@ def shoot():
             lines.add(((0,0,0), start, end))
     else:
         lines.add(((0,0,0), start, end))
+    remainingBullets -= 1
+    bulletsText.string = str(remainingBullets)
+    if not remainingBullets:
+        hero.reloadTimeout = Hero.RELOAD_TIME
 
 def slash():
     hero.slash()
     collisions = pygame.sprite.spritecollide(hero, enemies, False)
     collisions += pygame.sprite.spritecollide(hero, allies, False)
     for c in collisions:
+<<<<<<< Updated upstream
         c.damage(30)
+=======
+        c.damage(10)
         if isinstance(c, Ally):
-            multiplayer.s.send('6 %d %d;' % (c.n, 30))
+            multiplayer.s.send('6 %d %d;' % (c.n, 10))
         else:
-            multiplayer.s.send('5 %d %d;' % (c.n, 30) )
+            multiplayer.s.send('5 %d %d;' % (c.n, 10)) 
+>>>>>>> Stashed changes
 
 def callHeli():
     print "geduda choppa"
     h = Helicopter()
-    musica.helicopterstart()
     h.truePos = [hero.truePos[0], hero.truePos[1]]
     h.camera = hero
     h.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.h))
@@ -488,7 +500,6 @@ def callHeli():
     h.target = hero
     active.add(h)
     actors.add(h)
-    #TODO STOP HELIIIII!!!!
 
 def addAlly():
     a = Ally()
@@ -504,6 +515,16 @@ def addAlly():
     active.add(hb)
     return a
 
+<<<<<<< Updated upstream
+ally = addAlly()
+ally.truePos = [0, 0]
+ally.update(0)
+=======
+#ally = addAlly()
+#ally.truePos = [30, 30]
+#ally.update(0)
+>>>>>>> Stashed changes
+
 lastEnemyCreation = 0
 lastBlockLoad = 0
 lastShot = -1
@@ -516,15 +537,10 @@ while True:
     dT = clock.tick(60)
     fps.string = "%.2f" % (1000.0/dT)
     handleEvents(pygame.event.get())
+<<<<<<< Updated upstream
 
     if gameStarted:
         active.update(dT)
-        hurters = pygame.sprite.spritecollide(hero, enemies, False)
-        for spr in hurters:
-            print spr
-            if spr.attackTimeout <= 0:
-                hero.damage(spr.power)
-                spr.attackTimeout = 1000
         if hero.alive:
             if keys[K_w]:
                 hero.truePos[1] += -hero.speed*dT/1000
@@ -544,6 +560,9 @@ while True:
             callHeli()
             lastHeli = pygame.time.get_ticks()
 
+        if pygame.time.get_ticks() > 5000:
+            helpText.text = ""
+            helpText.bgColor = (152, 152, 152, 0)
         if lastEnemyCreation < pygame.time.get_ticks() - 1000:
             lastEnemyCreation = pygame.time.get_ticks()
         shouldBeVisible = visibleBlocks(hero.truePos)
@@ -552,28 +571,65 @@ while True:
             toUnload = loadedBlocks - shouldBeVisible
             print "Loading", toLoad
             print "Unloading", toUnload
-            if multiplayer.hosting:
-                for b in toLoad:
-                    loadBlock(b)
-                    multiplayer.s.send('3 %d %d %d;' % (b[0], b[1], seeds[b]))
-                for b in toUnload:
-                    unloadBlock(b)
-                    multiplayer.s.send('4 %d %d;' % (b[0], b[1]))
+            for b in toLoad:
+                loadBlock(b)
+            for b in toUnload:
+                unloadBlock(b)
             loadedBlocks = shouldBeVisible
             lastBlockLoad = pygame.time.get_ticks()
         hero.face(pygame.mouse.get_pos())
 
     if titleTimeout <= 0:
         title.kill()
+    elif any(buttons.values()):
+        gameStarted = True
     elif gameStarted:
         titleTimeout -= dT
+        print titleTimeout/2000*255
         title.image.set_alpha(titleTimeout/2000*255)
-    elif any(buttons.values()) or any(keys.values()):
-        gameStarted = True
-        gui.add(gem)
-        gui.add(moneyText)
-        gui.add(bullets)
-        gui.add(bulletsText)
 
     crosshair.rect.center = pygame.mouse.get_pos()
+=======
+    active.update(dT)
+    if keys[K_w]:
+        hero.truePos[1] += -hero.speed*dT/1000
+    if keys[K_s]:
+        hero.truePos[1] += hero.speed*dT/1000
+    if keys[K_a]:
+        hero.truePos[0] += -hero.speed*dT/1000
+    if keys[K_d]:
+        hero.truePos[0] += hero.speed*dT/1000
+
+    if buttons[1] and lastShot < pygame.time.get_ticks() - 500:
+        shoot()
+        lastShot = pygame.time.get_ticks()
+
+    if buttons[2] and (not lastHeli or lastHeli < pygame.time.get_ticks() - 10000):
+        print "heli"
+        callHeli()
+        lastHeli = pygame.time.get_ticks()
+
+    if pygame.time.get_ticks() > 5000:
+        helpText.text = ""
+        helpText.bgColor = (152, 152, 152, 0)
+    if lastEnemyCreation < pygame.time.get_ticks() - 1000:
+        lastEnemyCreation = pygame.time.get_ticks()
+    shouldBeVisible = visibleBlocks(hero.truePos)
+    if shouldBeVisible != loadedBlocks and (not lastBlockLoad or lastBlockLoad < pygame.time.get_ticks() - 2000):
+        toLoad = shouldBeVisible - loadedBlocks
+        toUnload = loadedBlocks - shouldBeVisible
+        print "Loading", toLoad
+        print "Unloading", toUnload
+        if multiplayer.hosting:
+            for b in toLoad:
+                loadBlock(b)
+                multiplayer.s.send('3 %d %d %d;' % (b[0], b[1], seeds[b]))
+            for b in toUnload:
+                unloadBlock(b)
+                multiplayer.s.send('4 %d %d;' % (b[0], b[1]))
+        loadedBlocks = shouldBeVisible
+        lastBlockLoad = pygame.time.get_ticks()
+    hero.face(pygame.mouse.get_pos())
+    
+>>>>>>> Stashed changes
     refreshScreen()

@@ -62,7 +62,7 @@ def spawn_room(x, y, max_x, max_y, mp, en, blocked, p=1):
     
     for i in xrange(x, x + sz):
         for j in xrange(y, y + sz):
-            mp[i][j] = 200
+            mp[j][i] = 200
             blocked.add((j, i))
     
     en_c = 0
