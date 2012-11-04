@@ -54,11 +54,17 @@ tiles[117] = [(6, 2), -1]
 # Ruins tiles
 tiles[200] = [(8, 1), -1]
 
-def spawn_room(x, y, max_x, max_y, mp, en, blocked, p=1):
+def spawn_room(x, y, max_x, max_y, mp, en, it, blocked, p=1):
     sz = 5
     if x < 1 or y < 1: return
     if x > max_x - sz + 1 or y > max_y - sz + 1: return
     if (y, x) in blocked: return
+	
+	while True:
+		i = random.randrange(x + 1, x + sz - 2)
+		j = random.randrange(y + 1, y + sz - 2)
+		
+		it[(i, j)] = 1
     
     for i in xrange(x, x + sz):
         for j in xrange(y, y + sz):
@@ -76,7 +82,7 @@ def spawn_room(x, y, max_x, max_y, mp, en, blocked, p=1):
     
     for dx, dy in [(0, -sz), (0, sz), (sz, 0), (-sz, 0)]:
         if random.random() > p: continue
-        spawn_room(x+dx, y+dy, max_x, max_y, mp, en, blocked, p*.4)
+        spawn_room(x+dx, y+dy, max_x, max_y, mp, en, it, blocked, p*.4)
 
 def gen_block(seed):
     sz_x = sz_y = Config['TILES_PER_BLOCK']
@@ -91,6 +97,7 @@ def gen_block(seed):
     bg = {}
     fg = {}
     en = {}
+	it = {}
     
     #print "-"*8
     #print mp_type
@@ -174,7 +181,7 @@ def gen_block(seed):
         x = random.randrange(1, sz_x-5-2)
         y = random.randrange(1, sz_y-5-2)
         
-        spawn_room(x, y, sz_x-1, sz_y-1, mp, en, blocked)
+        spawn_room(x, y, sz_x-1, sz_y-1, mp, en, it, blocked)
     
     # Generate Trees
     trees = set([])
@@ -232,7 +239,7 @@ def gen_block(seed):
         en[(x,y)] = 1
     
     #print en
-    return bg, fg, en
+    return bg, fg, en, it
 
 m = gen_block(712)
 
