@@ -2,10 +2,12 @@ import pygame
 from helpers import *
 
 class RelativeSprite(pygame.sprite.Sprite):
-	def __init__(self, camera):
+	def __init__(self, camera=None):
 		pygame.sprite.Sprite.__init__(self)
 		if hasattr(self, 'image'):
 			self.rect = self.image.get_rect()
+		if not camera:
+			raise Exception
 		self.camera = camera
 		self.truePos = [0,0]
 		self.rect = Rect(0,0,1,1)
