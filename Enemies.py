@@ -44,6 +44,7 @@ class cat(RelativeSprite):
     def damage(self, dmg):
         self.health = self.health-dmg
         self.musica.catdmg()
+        self.aware = 3000
         if self.health <= 0:
             self.die()
     def die(self):
@@ -131,6 +132,7 @@ class ethunterone(RelativeSprite):
     def damage(self, dmg):
         self.health = self.health-dmg
         self.musica.enemydamaged()
+        self.aware = 3000
         if self.health <= 0:
             self.die()
     
