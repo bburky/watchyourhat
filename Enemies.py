@@ -38,9 +38,7 @@ class ethunterone(RelativeSprite):
         self.truePos = [x, y]
         self.range = 50
         self.target = None
-    def attack(self, player):
-        self.target = player
-        #leave to sterling
+        
     def damage(self, dmg):
         self.health = self.health-dmg
         self.musica.enemydamaged()
@@ -50,7 +48,10 @@ class ethunterone(RelativeSprite):
         self.alive = False
         self.deathTime = pygame.time.get_ticks()
         self.image = ethunterone.images['dead']
-        return self
+        pos = self.target.rect.center
+        targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
+        self.image = rot_center(self.image, -90-targetDir)
+
     def update(self, dT):
         RelativeSprite.update(self, dT)
 
@@ -63,7 +64,7 @@ class ethunterone(RelativeSprite):
             self.image = ethunterone.images['dead']
 
         #change direction
-        if self.target:
+        if self.alive and self.target:
             pos = self.target.rect.center
             targetDir = math.degrees(math.atan2(pos[1] - self.rect.centery, pos[0] - self.rect.centerx))
             self.image = rot_center(self.image, -90-targetDir)
@@ -77,10 +78,6 @@ class ethunterone(RelativeSprite):
         else:
             if hasattr(self, 'deathTime') and self.deathTime < pygame.time.get_ticks() - 1000:
                 self.kill()
-
-    def move(self, (x,y)):
-        self.truePos = [x,y]
-        self.update()
     def ai(self):
         min = float("inf");
         player = -1;

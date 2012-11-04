@@ -87,8 +87,7 @@ def handleEvents(events):
             buttons[e.button] = False
 
         if e.type == MOUSEBUTTONDOWN and e.button == 3:
-            print "slash"
-            hero.slash()
+            slash()
 
 def whichBlock(pos):
     # calculates the block that the position is part of
@@ -180,7 +179,7 @@ def generateTiles(block):
             enemies.add(spr)
             actors.add(spr)
             active.add(spr)
-            spr.attack(hero)
+            spr.target = hero
             gpEnem.add(spr)
 
             hb = HealthBar(target=spr)
@@ -239,6 +238,9 @@ def shoot():
 
 def slash():
     hero.slash()
+    collisions = pygame.sprite.spritecollide(hero, enemies)
+    for c in collisions:
+        c.damage(10)
 
 def callHeli():
     print "geduda choppa"
