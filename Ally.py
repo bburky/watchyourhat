@@ -46,7 +46,6 @@ class Ally(RelativeSprite):
         self.health -= amount
 
     def update(self, dT):
-        print self.rect.topleft
         RelativeSprite.update(self, dT)
         if self.shootTimeout > 0:
             self.shootTimeout -= dT

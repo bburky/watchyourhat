@@ -28,13 +28,14 @@ if "--fullscreen" in sys.argv:
     flags |= pygame.FULLSCREEN
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), flags)
 
-random.seed(time.time())
+
 # set up sprite groups
 seeds = {}
 lower = defaultdict(pygame.sprite.RenderUpdates)
 middle = defaultdict(pygame.sprite.RenderUpdates)
 enemies = pygame.sprite.RenderUpdates()
 actors = pygame.sprite.RenderUpdates()
+allies = pygame.sprite.RenderUpdates()
 upper = defaultdict(pygame.sprite.RenderUpdates)
 gui = pygame.sprite.RenderUpdates()
 active = pygame.sprite.RenderUpdates()
@@ -46,6 +47,10 @@ ssBottom = Spritesheet('tiles-bottom.png')
 ssTop = Spritesheet('tiles-top.png')
 
 background = None
+
+#some state
+random.seed(time.time())
+remainingBullets = 15
 
 hero = Hero()
 active.add(hero)
@@ -75,14 +80,18 @@ moneyText.createImage()
 gui.add(moneyText)
 
 bullets = pygame.sprite.Sprite()
-bullets.image = ssBottom.image_at(Rect(8*45, 6*45, 3*45, 45))
+bullets.image = ssBottom.image_at(Rect(8*45, 6*45, 45, 45))
 bullets.rect = bullets.image.get_rect()
 bullets.rect.right -= 100
 bullets.rect.topleft = (0, SCREEN_HEIGHT-45)
 gui.add(bullets)
 
-bulletObf = pygame.sprite.Sprite()
-bulletObf.image = pygame.Surface((0,45))
+bulletsText = Text(str(remainingBullets))
+bulletsText.color = (255, 0, 0)
+bulletsText.bgColor = (0,0,0,0)
+bulletsText.rect.topleft = Vec2d(bullets.rect.topright) + Vec2d(5, 18)
+bulletsText.createImage()
+gui.add(bulletsText)
 
 helpText = Text("")
 helpText.rect.topleft = (SCREEN_WIDTH-200, 300)
@@ -233,13 +242,14 @@ def passable((x, y)):
     return True
 
 def shoot():
+    global remainingBullets
     hero.shoot()
     start = hero.rect.center
     delta = Vec2d(1000, 0)
     delta.rotate(-hero.theta)
     end = Vec2d(start) + delta
     intersecting = []
-    for e in enemies:
+    for e in set(enemies) | set(allies):
         if not e.alive: continue
         offsets = []
         offsets.append(Vec2d(e.rect.topleft) - Vec2d(hero.rect.center))
@@ -260,6 +270,8 @@ def shoot():
             lines.add(((0,0,0), start, end))
     else:
         lines.add(((0,0,0), start, end))
+    remainingBullets -= 1
+    bulletsText.string = str(remainingBullets)
 
 def slash():
     hero.slash()
@@ -283,6 +295,7 @@ def addAlly():
     a.truePos = [hero.truePos[0], hero.truePos[1]]
     a.setCamera(hero)
     a.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.h))
+    allies.add(a)
     actors.add(a)
     active.add(a)
 
@@ -292,7 +305,7 @@ def addAlly():
     return a
 
 ally = addAlly()
-ally.truePos = [30, 30]
+ally.truePos = [0, 0]
 ally.update(0)
 
 lastEnemyCreation = 0
@@ -304,14 +317,15 @@ while True:
     fps.string = "%.2f" % (1000.0/dT)
     handleEvents(pygame.event.get())
     active.update(dT)
-    if keys[K_w]:
-        hero.truePos[1] += -hero.speed*dT/1000
-    if keys[K_s]:
-        hero.truePos[1] += hero.speed*dT/1000
-    if keys[K_a]:
-        hero.truePos[0] += -hero.speed*dT/1000
-    if keys[K_d]:
-        hero.truePos[0] += hero.speed*dT/1000
+    if hero.alive:
+        if keys[K_w]:
+            hero.truePos[1] += -hero.speed*dT/1000
+        if keys[K_s]:
+            hero.truePos[1] += hero.speed*dT/1000
+        if keys[K_a]:
+            hero.truePos[0] += -hero.speed*dT/1000
+        if keys[K_d]:
+            hero.truePos[0] += hero.speed*dT/1000
 
     if buttons[1] and lastShot < pygame.time.get_ticks() - 500:
         shoot()
