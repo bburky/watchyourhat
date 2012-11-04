@@ -24,7 +24,7 @@ class cat(RelativeSprite):
         RelativeSprite.__init__(self)
         #self.tilewidth = tilewidth
         self.health = cat.maxHealth
-        self.aware = Config['PIXELS_PER_TILE']*3
+        self.aware = Config['PIXELS_PER_TILE']*4
         #self.id = id
         self.speed = 9
         self.musica = Music()

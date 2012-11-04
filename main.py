@@ -240,6 +240,7 @@ gameover = pygame.sprite.Sprite()
 gameover.image = load_image('gameover.png')
 gameover.rect = gameover.image.get_rect()
 gameover.rect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+musica.gameover()
 
 gem = pygame.sprite.Sprite()
 gem.image = ssBottom.image_at(Rect(1*45, 3*45, 45, 45))

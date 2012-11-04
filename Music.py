@@ -18,7 +18,10 @@ class Music:
         self.pistolrel = self.sound.Sound('data/reload.wav')
         self.empty = self.sound.Sound('data/empty.wav')
         self.swish = self.sound.Sound('data/swish.wav')
+        self.go = self.sound.Sound('data/gameover.wav')
         if not self.sound: print 'Warning, sound disabled'
+    def gameover(self):
+        self.go.play(-1)    
     def pistolshot(self):
         pistolshot = self.sound.Sound('data/gunshotshort.wav')
         pistolshot.play(0)
