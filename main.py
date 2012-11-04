@@ -14,6 +14,7 @@ from RelativeSprite import RelativeSprite
 from Helicopter import Helicopter
 from Text import Text
 from HealthBar import HealthBar
+from Music import Music
 import time
 
 SCREEN_WIDTH = 800
@@ -23,6 +24,8 @@ keys = defaultdict(lambda: False)
 buttons = defaultdict(lambda: False)
 
 pygame.init()
+musica = Music()
+musica.junglestart()
 flags = pygame.DOUBLEBUF|pygame.SRCALPHA|pygame.HWACCEL
 if "--fullscreen" in sys.argv:
     flags |= pygame.FULLSCREEN
@@ -124,6 +127,7 @@ def handleEvents(events):
                     moneyText = str(int(moneyText.string) + i.worth())
         elif e.type == KEYDOWN and e.key == K_r:
             hero.reload()
+            musica.pistolreload()
         elif e.type == KEYUP:
             keys[e.key] = False
         if e.type == QUIT:
@@ -136,6 +140,7 @@ def handleEvents(events):
 
         if e.type == MOUSEBUTTONDOWN and e.button == 3:
             slash()
+            musica.knife()
 
 def whichBlock(pos):
     # calculates the block that the position is part of
@@ -305,6 +310,7 @@ def slash():
 def callHeli():
     print "geduda choppa"
     h = Helicopter()
+    musica.helicopterstart()
     h.truePos = [hero.truePos[0], hero.truePos[1]]
     h.camera = hero
     h.setOffset((SCREEN_WIDTH/2 - hero.rect.w, SCREEN_HEIGHT/2 - hero.rect.h))
@@ -312,6 +318,7 @@ def callHeli():
     h.target = hero
     active.add(h)
     actors.add(h)
+    #TODO STOP HELIIIII!!!!
 
 def addAlly():
     a = Ally()
