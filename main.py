@@ -276,7 +276,7 @@ while True:
     if keys[K_d]:
         hero.truePos[0] += hero.speed*dT/1000
 
-    if buttons[1] and lastShot < pygame.time.get_ticks() - 100:
+    if buttons[1] and lastShot < pygame.time.get_ticks() - 500:
         shoot()
         lastShot = pygame.time.get_ticks()
 
