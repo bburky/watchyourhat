@@ -142,7 +142,7 @@ def manage_network():
                 unloadBlock((x, y))
             elif m_t == 5:
                 i, dmg = [int(i) for i in m[1:]]
-                if i not in enemies_list: continue
+                if i not in enemies_list[i]: continue
                 block_lock.acquire()
                 enemies_list[i].damage(dmg)
                 block_lock.release()
@@ -151,9 +151,6 @@ def manage_network():
                 i, dmg = [int(i) for i in m[1:]]
                 allies2[i].damage(dmg)
                 block_lock.release()
-            elif m_t == 8:
-                x0, y0, xf, yf = [int(i) for i in m[1:]]
-                addGunshot((x0, y0), (xf, yf))
         del multiplayer.msg_buff[:]
         multiplayer.msg_lock.release()
         
@@ -505,7 +502,6 @@ def shoot():
             if -45 < delta.angle - (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).angle < 45:
                 intersecting.append(e)
     intersecting.sort(key=lambda e: (Vec2d(e.rect.center) - Vec2d(hero.rect.center)).length)
-    shot_end = (0,0)
     if intersecting:
         off = Vec2d(intersecting[0].rect.center) - Vec2d(hero.rect.center)
         if off.length < SCREEN_WIDTH:
@@ -516,16 +512,11 @@ def shoot():
             else:
                 multiplayer.s.send('5 %d %d;' % (tgt.n, 10)) 
             lines.add(((0,0,0), start, intersecting[0].rect.center))
-            shot_end = intersecting[0].rect.center
         else:
             lines.add(((0,0,0), start, end))
-            shot_end = end
     else:
-        shot_end = end
         lines.add(((0,0,0), start, end))
-    shot_end = screenToAbs(shot_end)
-    shot_start = screenToAbs(start)
-    #multiplayer.s.send('8 %d %d %d %d;' % (start[0], start[1], shot_end[0], shot_end[1]))
+
     if hero.ammo <= 0:
         hero.reload()
 
@@ -588,6 +579,7 @@ while True:
         active.update(dT)
         collidingGems = pygame.sprite.spritecollide(hero, items, False)
         for c in collidingGems:
+            musica.gempick()
             c.kill()
             moneyText.string = str(int(moneyText.string) + 1)
         hurters = pygame.sprite.spritecollide(hero, enemies, False)
