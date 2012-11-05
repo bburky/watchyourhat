@@ -210,6 +210,13 @@ background = None
 
 #some state
 random.seed(time.time())
+lastEnemyCreation = 0
+lastBlockLoad = 0
+lastShot = -1
+lastHeli = 0
+gameStarted = False
+gameOver = True
+titleTimeout = 2000.0
 
 hero = Hero()
 active.add(hero)
@@ -278,6 +285,7 @@ clock = pygame.time.Clock()
 all_generated = True
 
 def handleEvents(events):
+    global gameOver
     for e in events:
         if e.type == KEYDOWN:
             keys[e.key] = True
@@ -300,10 +308,15 @@ def handleEvents(events):
             sys.exit(0)
         if e.type == MOUSEBUTTONDOWN:
             buttons[e.button] = True
+            if e.button == 1 and gameOver:
+                gameover.kill()
+                hero.alive = True
+                hero.health = hero.maxHealth
+                gameOver = False
         if e.type == MOUSEBUTTONUP:
             buttons[e.button] = False
 
-        if e.type == MOUSEBUTTONDOWN and e.button == 3:
+        if e.type == MOUSEBUTTONDOWN and e.button == 3 and hero.alive:
             slash()
             musica.knife()
 
@@ -570,14 +583,6 @@ def addAlly():
     active.add(hb)
     return a
 
-lastEnemyCreation = 0
-lastBlockLoad = 0
-lastShot = -1
-lastHeli = 0
-
-gameStarted = False
-titleTimeout = 2000.0
-
 while True:
     dT = clock.tick(60)
     fps.string = "%.2f" % (1000.0/dT)
@@ -607,6 +612,7 @@ while True:
                 hero.truePos[0] += hero.speed*dT/1000
         else:
             gui.add(gameover)
+            gameOver = True
 
         if buttons[1] and lastShot < pygame.time.get_ticks() - 500:
             shoot()
